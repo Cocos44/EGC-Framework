@@ -3,3 +3,5 @@ build*
 /**/.vs
 /**/obj
 components_hidden
+.cache/
+compile_commands.json
