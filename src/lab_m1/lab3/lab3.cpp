@@ -33,10 +33,10 @@ void Lab3::Init() {
     float squareSide = 100;
 
     // Square center x coordinate.
-    this->cx = (corner.x + squareSide) / 2;
+    this->cx = corner.x + squareSide / 2;
 
     // Square center y coordinate.
-    this->cx = (corner.y + squareSide) / 2;
+    this->cy = corner.y + squareSide / 2;
 
     // Initialize tx and ty (the translation steps)
     translateX = 0;
@@ -59,7 +59,16 @@ void Lab3::Init() {
 
     Mesh* square3 = object2D::CreateSquare("square3", corner, squareSide,
                                            glm::vec3(0, 0, 1));
+
     AddMeshToList(square3);
+
+    float base = 100;
+    float height = 100;
+
+    Mesh* triangle = object2D::CreateTriangle("triangle", corner, base, height,
+                                              glm::vec3(1, 1, 0), true);
+
+    AddMeshToList(triangle);
 }
 
 void Lab3::FrameStart() {
@@ -73,11 +82,6 @@ void Lab3::FrameStart() {
 }
 
 void Lab3::Update(float deltaTimeSeconds) {
-    // TODO(student): Update steps for translation, rotation and scale,
-    // in order to create animations. Use the class variables in the
-    // class header, and if you need more of them to complete the task,
-    // add them over there!
-
     this->modelMatrix = glm::mat3(1);
 
     this->translateX += deltaTimeSeconds * 100;
@@ -98,8 +102,9 @@ void Lab3::Update(float deltaTimeSeconds) {
 
     this->modelMatrix = glm::mat3(1);
     this->modelMatrix *= transform2D::Translate(400, 250);
-    this->modelMatrix *= transform2D::Scale(this->scaleX, this->scaleY);
     this->modelMatrix *= transform2D::Translate(this->cx, this->cy);
+    this->modelMatrix *= transform2D::Scale(this->scaleX, this->scaleY);
+    this->modelMatrix *= transform2D::Translate(-this->cx, -this->cy);
     RenderMesh2D(meshes["square2"], shaders["VertexColor"], this->modelMatrix);
 
     modelMatrix = glm::mat3(1);
@@ -107,9 +112,22 @@ void Lab3::Update(float deltaTimeSeconds) {
     this->angularStep += deltaTimeSeconds * 1.5f;
 
     this->modelMatrix *= transform2D::Translate(650, 250);
-    this->modelMatrix *= transform2D::Rotate(this->angularStep);
     this->modelMatrix *= transform2D::Translate(this->cx, this->cy);
+    this->modelMatrix *= transform2D::Rotate(this->angularStep);
+    this->modelMatrix *= transform2D::Translate(-this->cx, -this->cy);
     RenderMesh2D(meshes["square3"], shaders["VertexColor"], this->modelMatrix);
+
+    float base = 100;
+    float height = 100;
+
+    for (int i = 0; i < 5; i++) {
+        modelMatrix = glm::mat3(1);
+        modelMatrix *= transform2D::Translate(650, 250);
+        modelMatrix *= transform2D::Rotate(i * 3.14159f / 2.5f);
+        modelMatrix *= transform2D::Translate(-base / 2, 0);
+        modelMatrix *= transform2D::Translate(0, 60);
+        RenderMesh2D(meshes["triangle"], shaders["VertexColor"], modelMatrix);
+    }
 }
 
 void Lab3::FrameEnd() {}

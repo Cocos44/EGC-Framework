@@ -138,11 +138,6 @@ void Lab3_Vis2D::DrawScene(glm::mat3 visMatrix) {
     RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
 }
 
-/*
- *  These are callback functions. To find more about callbacks and
- *  how they behave, see `input_controller.h`.
- */
-
 void Lab3_Vis2D::LogicSpace::MoveLogicSpace(float moveX, float moveY) {
     this->x += moveX;
     this->y += moveY;
@@ -157,6 +152,11 @@ void Lab3_Vis2D::LogicSpace::ZoomOut(float changeRatio) {
     this->width /= (1 + changeRatio);
     this->height /= (1 + changeRatio);
 }
+
+/*
+ *  These are callback functions. To find more about callbacks and
+ *  how they behave, see `input_controller.h`.
+ */
 
 void Lab3_Vis2D::OnInputUpdate(float deltaTime, int mods) {
     float moveSpeed = 10.0f;
