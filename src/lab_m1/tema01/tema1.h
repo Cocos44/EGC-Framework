@@ -2,4 +2,4 @@
 
 #include "components/simple_scene.h"
 
-namespace m1 {}  // namespace m1
+namespace hw1 {}  // namespace hw1

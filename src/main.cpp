@@ -4,6 +4,7 @@
 #include "components/simple_scene.h"
 #include "core/engine.h"
 #include "lab_m1/lab3/lab3_vis2D.h"
+#include "lab_m1/tema01/editor.h"
 
 #if defined(WITH_LAB_M1)
 #include "lab_m1/lab_list.h"
@@ -40,7 +41,7 @@ int main(int argc, char** argv) {
     (void)Engine::Init(wp);
 
     // Create a new 3D world and start running it
-    World* world = new m1::Lab4();
+    World* world = new hw1::Editor();
 
     world->Init();
     world->Run();
