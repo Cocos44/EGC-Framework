@@ -156,7 +156,21 @@ void Lab4::OnKeyPress(int key, int mods) {
         }
     }
 
-    // TODO(student): Add viewport movement and scaling logic
+    if (key == GLFW_KEY_I) {
+        this->miniViewportArea.y += 10.0f;
+    } else if (key == GLFW_KEY_K) {
+        this->miniViewportArea.y -= 10.0f;
+    } else if (key == GLFW_KEY_J) {
+        this->miniViewportArea.x -= 10.0f;
+    } else if (key == GLFW_KEY_L) {
+        this->miniViewportArea.x += 10.0f;
+    } else if (key == GLFW_KEY_U) {
+        this->miniViewportArea.width += 10.0f;
+        this->miniViewportArea.height += 10.0f;
+    } else if (key == GLFW_KEY_O) {
+        this->miniViewportArea.width -= 10.0f;
+        this->miniViewportArea.height -= 10.0f;
+    }
 }
 
 void Lab4::OnKeyRelease(int key, int mods) {
