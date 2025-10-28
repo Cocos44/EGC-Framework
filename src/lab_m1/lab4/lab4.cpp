@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "core/window/window_object.h"
 #include "lab_m1/lab4/transform3D.h"
 
 using namespace std;
@@ -89,7 +90,7 @@ void Lab4::Update(float deltaTimeSeconds) {
     glViewport(miniViewportArea.x, miniViewportArea.y, miniViewportArea.width,
                miniViewportArea.height);
 
-    // TODO(student): render the scene again, in the new viewport
+    RenderScene();
     DrawCoordinateSystem();
 }
 
@@ -110,6 +111,32 @@ void Lab4::OnInputUpdate(float deltaTime, int mods) {
         this->translateX -= deltaTime * 1.f;
     } else if (window->KeyHold(GLFW_KEY_D)) {
         this->translateX += deltaTime * 1.f;
+    }
+
+    // Second cube scaling logic.
+    if (window->KeyHold(GLFW_KEY_1)) {
+        this->scaleX += deltaTime * 1.f;
+        this->scaleY += deltaTime * 1.f;
+        this->scaleZ += deltaTime * 1.f;
+    } else if (window->KeyHold(GLFW_KEY_2)) {
+        this->scaleX -= deltaTime * 1.f;
+        this->scaleY -= deltaTime * 1.f;
+        this->scaleZ -= deltaTime * 1.f;
+    }
+
+    // Third cube rotation logic.
+    if (window->KeyHold(GLFW_KEY_3)) {
+        this->angularStepOX += deltaTime * 1.f;
+    } else if (window->KeyHold(GLFW_KEY_4)) {
+        this->angularStepOX -= deltaTime * 1.f;
+    } else if (window->KeyHold(GLFW_KEY_5)) {
+        this->angularStepOY += deltaTime * 1.f;
+    } else if (window->KeyHold(GLFW_KEY_6)) {
+        this->angularStepOY -= deltaTime * 1.f;
+    } else if (window->KeyHold(GLFW_KEY_7)) {
+        this->angularStepOZ += deltaTime * 1.f;
+    } else if (window->KeyHold(GLFW_KEY_8)) {
+        this->angularStepOZ -= deltaTime * 1.f;
     }
 }
 
