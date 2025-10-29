@@ -5,16 +5,19 @@
  * @see object2D.h
  */
 
-#include "object2D.h"
+#include "object.h"
 
 #include <vector>
 
 #include "core/engine.h"
 #include "utils/gl_utils.h"
 
-Mesh* object2D::CreateSquare(const std::string& name,
-                             glm::vec3 leftBottomCorner, float length,
-                             glm::vec3 color, bool fill) {
+hw1::Object::Object(Mesh* mesh, glm::vec2 position, glm::vec3 color,
+                    bool active)
+    : mesh(mesh), position(position), color(color), active(active) {}
+
+Mesh* hw1::CreateSquare(const std::string& name, glm::vec3 leftBottomCorner,
+                        float length, glm::vec3 color, bool fill) {
     std::vector<VertexFormat> vertices = {
         VertexFormat(leftBottomCorner, color),
         VertexFormat(leftBottomCorner + glm::vec3(length, 0, 0), color),

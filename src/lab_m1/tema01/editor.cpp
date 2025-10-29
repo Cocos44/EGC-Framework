@@ -6,10 +6,11 @@
  * @author Grigoras Vlad Andrei
  */
 
-#include "editor.h"
+#include "lab_m1/tema01/editor.h"
 
 #include "glm/fwd.hpp"
-#include "lab_m1/lab3/transform2D.h"
+#include "lab_m1/tema01/object.h"
+#include "lab_m1/tema01/transform2D.h"
 
 hw1::Editor::Editor() {}
 
@@ -22,15 +23,18 @@ void hw1::Editor::Init() {
     camera->Update();
     GetCameraInput()->SetActive(false);
 
-    // Create logic space.
+    // Create logic space
     this->logicSpace = LogicSpace(0, 0, LOGIC_SPACE_WIDTH, LOGIC_SPACE_HEIGHT);
 
-    glm::vec3 corner = glm::vec3(5.0f, 5.0f, 0);
+    glm::vec3 corner(0.0f, 0.0f, 0.0f);
     float length = 25.0f;
+    Mesh* squareMesh =
+        hw1::CreateSquare("square", corner, length, glm::vec3(1, 0, 0), true);
+    AddMeshToList(squareMesh);
 
-    Mesh* square = object2D::CreateSquare("square", corner, length,
-                                          glm::vec3(1, 0, 0), true);
-    AddMeshToList(square);
+    glm::vec2 centerPos(corner.x + length / 2.0f, corner.y + length / 2.0f);
+    hw1::Object squareObject(squareMesh, centerPos, glm::vec3(1, 0, 0));
+    objects.push_back(squareObject);
 }
 
 glm::mat3 hw1::Editor::GetSpaceConversionMatrix() {
@@ -95,7 +99,11 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 void hw1::Editor::FrameEnd() {}
 
 void hw1::Editor::DrawScene() {
-    // Example of rendering a square.
-    glm::mat3 modelMatrix = visMatrix;
-    RenderMesh2D(meshes["square"], shaders["VertexColor"], modelMatrix);
+    for (auto& obj : this->objects) {
+        if (!obj.isActive()) continue;
+        glm::mat3 modelMatrix = visMatrix;
+        modelMatrix *=
+            transform2D::Translate(obj.getPosition().x, obj.getPosition().y);
+        RenderMesh2D(obj.getMesh(), shaders["VertexColor"], modelMatrix);
+    }
 }

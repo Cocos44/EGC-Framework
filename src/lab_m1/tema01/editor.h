@@ -8,8 +8,8 @@
 #pragma once
 
 #include "components/simple_scene.h"
-#include "glm/matrix.hpp"
-#include "object2D.h"
+#include "glm/fwd.hpp"
+#include "lab_m1/tema01/object.h"
 #include "utils/gl_utils.h"
 
 #define LOGIC_SPACE_HEIGHT 500
@@ -127,6 +127,7 @@ class Editor : public gfxc::SimpleScene {
     void DrawScene();
 
    protected:
+    std::vector<Object> objects;
     LogicSpace logicSpace;
     ViewSpace viewSpace;
 
