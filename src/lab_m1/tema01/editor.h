@@ -8,10 +8,10 @@
 #pragma once
 
 #include "components/simple_scene.h"
+#include "lab_m1/tema01/line.h"
 #include "lab_m1/tema01/object.h"
 #include "lab_m1/tema01/square.h"
 #include "lab_m1/tema01/transform2D.h"
-#include "utils/gl_utils.h"
 
 #define LOGIC_SPACE_HEIGHT 500
 #define LOGIC_SPACE_WIDTH 500
@@ -65,12 +65,13 @@ class Editor : public gfxc::SimpleScene {
      */
     struct ViewSpace {
         ViewSpace() : x(0), y(0), width(800), height(600) {}
-        ViewSpace(GLint x, GLint y, GLsizei width, GLsizei height)
+        ViewSpace(int x, int y, int width, int height)
             : x(x), y(y), width(width), height(height) {}
-        GLint x;
-        GLint y;
-        GLsizei width;
-        GLsizei height;
+
+        int x;
+        int y;
+        int width;
+        int height;
     };
 
     /**
@@ -85,10 +86,11 @@ class Editor : public gfxc::SimpleScene {
         LogicSpace() : x(0), y(0), width(500), height(500) {}
         LogicSpace(float x, float y, float width, float height)
             : x(x), y(y), width(width), height(height) {}
-        GLfloat x;
-        GLfloat y;
-        GLfloat width;
-        GLfloat height;
+
+        float x;
+        float y;
+        float width;
+        float height;
     };
 
    public:
@@ -107,6 +109,14 @@ class Editor : public gfxc::SimpleScene {
      * square grid.
      */
     void CreateGrid();
+
+    /**
+     * @brief Creates lines that will separate features.
+     *
+     * With these lines, every feature, such as the grid, block selection,
+     * number of blocks remaining, will be clearly separated.
+     */
+    void CreateEditorBorders();
 
     /**
      * @brief Get matrix conversion for translating logic space to view space.
@@ -145,6 +155,7 @@ class Editor : public gfxc::SimpleScene {
      */
     void FrameEnd() override;
 
+    void DrawBorders();
     /**
      * @brief Draws grid in current frame.
      */
@@ -157,6 +168,7 @@ class Editor : public gfxc::SimpleScene {
 
    protected:
     std::vector<Square> grid;
+    std::vector<Line> delimiters;
     std::vector<Object> objects;
     LogicSpace logicSpace;
     ViewSpace viewSpace;

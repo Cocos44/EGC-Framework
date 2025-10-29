@@ -27,7 +27,31 @@ void hw1::Editor::Init() {
         hw1::Editor::LogicSpace(0, 0, LOGIC_SPACE_WIDTH, LOGIC_SPACE_HEIGHT);
 
     // Create square mesh and set up grid for rendering.
+    this->CreateEditorBorders();
     this->CreateGrid();
+}
+
+void hw1::Editor::CreateEditorBorders() {
+    Mesh* lineMesh = hw1::CreateLine("editor_line", VEC3_RED);
+
+    // Create grid border lines.
+    {
+        /**
+         * WARN: DO NOT CHANGE CORNER VALUES!
+         */
+        glm::vec3 bottomLeft = glm::vec3(193, 25, 0);
+        glm::vec3 topLeft = glm::vec3(193, 195, 0);
+        glm::vec3 topRight =
+            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 195, 0);
+        glm::vec3 bottomRight =
+            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 25, 0);
+
+        // Add every line based on the 4 corners created.
+        delimiters.push_back(Line(lineMesh, VEC3_RED, bottomLeft, topLeft));
+        delimiters.push_back(Line(lineMesh, VEC3_RED, topLeft, topRight));
+        delimiters.push_back(Line(lineMesh, VEC3_RED, topRight, bottomRight));
+        delimiters.push_back(Line(lineMesh, VEC3_RED, bottomRight, bottomLeft));
+    }
 }
 
 void hw1::Editor::CreateGrid() {
@@ -46,6 +70,7 @@ void hw1::Editor::CreateGrid() {
                 bottomLeft + glm::vec3(GRID_SQUARE_LENGTH / 2.0f,
                                        GRID_SQUARE_LENGTH / 2.0f, 0.0f);
 
+            // Add newly created square to grid.
             this->grid.push_back(hw1::Square(squareMesh, center_position,
                                              VEC3_GREEN, GRID_SQUARE_LENGTH));
         }
@@ -113,18 +138,53 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 
 void hw1::Editor::FrameEnd() {}
 
-void hw1::Editor::DrawGrid() {
+void hw1::Editor::DrawBorders() {
     glm::mat3 modelMatrix = glm::mat3(1);
 
-    for (auto& square : this->grid) {
+    // Go through every line to render it.
+    for (const auto& line : this->delimiters) {
+        // First move line to it's starting position, then rotate it based on
+        // the arctangent calculated in constructor, then scale to the size
+        // wanted.
         modelMatrix =
-            visMatrix * transform2D::Translate(square.GetPosition().x,
-                                               square.GetPosition().y);
+            visMatrix *
+            transform2D::Translate(line.GetPosition().x, line.GetPosition().y) *
+            transform2D::Rotate(line.GetAngle()) *
+            transform2D::Scale(line.GetLength(), 1);
 
-        RenderMesh2D(square.GetMesh(), shaders["VertexColor"], modelMatrix);
+        // Make line a bit thicker.
+        glLineWidth(2.0f);
 
+        // Render mesh.
+        RenderMesh2D(line.GetMesh(), shaders["VertexColor"], modelMatrix);
+
+        // Reset line thickness.
+        glLineWidth(1.0f);
+
+        // Reset modelMatrix.
         modelMatrix = glm::mat3(1);
     }
 }
 
-void hw1::Editor::DrawScene() { this->DrawGrid(); }
+void hw1::Editor::DrawGrid() {
+    glm::mat3 modelMatrix = glm::mat3(1);
+
+    // Go through every grid square to render it.
+    for (auto& square : this->grid) {
+        // Move the square to wanted position.
+        modelMatrix =
+            visMatrix * transform2D::Translate(square.GetPosition().x,
+                                               square.GetPosition().y);
+
+        // Render mesh.
+        RenderMesh2D(square.GetMesh(), shaders["VertexColor"], modelMatrix);
+
+        // Reset modelMatrix.
+        modelMatrix = glm::mat3(1);
+    }
+}
+
+void hw1::Editor::DrawScene() {
+    this->DrawBorders();
+    this->DrawGrid();
+}

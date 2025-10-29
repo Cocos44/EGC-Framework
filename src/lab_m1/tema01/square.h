@@ -13,14 +13,26 @@
 
 namespace hw1 {
 
+/**
+ * @class Square
+ * @brief Represents a square.
+ *
+ * Inherits Object + contains side length.
+ *
+ * @see Object
+ */
 class Square : public hw1::Object {
    private:
     float length;
 
    public:
+    /**
+     * @brief Default constructor that calls Object constructor.
+     */
     Square(Mesh* mesh, glm::vec3 position, glm::vec3 color, float length,
            bool active = true);
-    float getLength() const { return this->length; }
+
+    float GetLength() const { return this->length; }
 };
 
 /**
