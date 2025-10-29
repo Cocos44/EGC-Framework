@@ -1,16 +1,15 @@
 /**
  * @file editor.cpp
  * @brief Implements all methods and logic of Editor class.
- * @see Editor.h
  *
+ * Handles scene rendering, transitioning from logic space to view space and
+ * spaceship configuration logic.
+ *
+ * @see Editor.h
  * @author Grigoras Vlad Andrei
  */
 
 #include "lab_m1/tema01/editor.h"
-
-#include "glm/fwd.hpp"
-#include "lab_m1/tema01/object.h"
-#include "lab_m1/tema01/transform2D.h"
 
 hw1::Editor::Editor() {}
 
@@ -23,18 +22,34 @@ void hw1::Editor::Init() {
     camera->Update();
     GetCameraInput()->SetActive(false);
 
-    // Create logic space
-    this->logicSpace = LogicSpace(0, 0, LOGIC_SPACE_WIDTH, LOGIC_SPACE_HEIGHT);
+    // Create logic space.
+    this->logicSpace =
+        hw1::Editor::LogicSpace(0, 0, LOGIC_SPACE_WIDTH, LOGIC_SPACE_HEIGHT);
 
-    glm::vec3 corner(0.0f, 0.0f, 0.0f);
-    float length = 25.0f;
-    Mesh* squareMesh =
-        hw1::CreateSquare("square", corner, length, glm::vec3(1, 0, 0), true);
-    AddMeshToList(squareMesh);
+    // Create square mesh and set up grid for rendering.
+    this->CreateGrid();
+}
 
-    glm::vec2 centerPos(corner.x + length / 2.0f, corner.y + length / 2.0f);
-    hw1::Object squareObject(squareMesh, centerPos, glm::vec3(1, 0, 0));
-    objects.push_back(squareObject);
+void hw1::Editor::CreateGrid() {
+    Mesh* squareMesh = hw1::CreateSquare("grid_square", BOTTOM_LEFT_CORNER,
+                                         GRID_SQUARE_LENGTH, VEC3_GREEN, true);
+    // When creating square we need to remember the center coordinate.
+    for (int row = 0; row < GRID_ROW_NUMBER; row++) {
+        for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
+            // Compute bottom left corner.
+            glm::vec3 bottomLeft = GRID_TOP_LEFT +
+                                   (float)row * GRID_HORIZONTAL_OFFSET -
+                                   (float)column * GRID_VERTICAL_OFFSET;
+
+            // Compute center position.
+            glm::vec3 center_position =
+                bottomLeft + glm::vec3(GRID_SQUARE_LENGTH / 2.0f,
+                                       GRID_SQUARE_LENGTH / 2.0f, 0.0f);
+
+            this->grid.push_back(hw1::Square(squareMesh, center_position,
+                                             VEC3_GREEN, GRID_SQUARE_LENGTH));
+        }
+    }
 }
 
 glm::mat3 hw1::Editor::GetSpaceConversionMatrix() {
@@ -98,12 +113,18 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 
 void hw1::Editor::FrameEnd() {}
 
-void hw1::Editor::DrawScene() {
-    for (auto& obj : this->objects) {
-        if (!obj.isActive()) continue;
-        glm::mat3 modelMatrix = visMatrix;
-        modelMatrix *=
-            transform2D::Translate(obj.getPosition().x, obj.getPosition().y);
-        RenderMesh2D(obj.getMesh(), shaders["VertexColor"], modelMatrix);
+void hw1::Editor::DrawGrid() {
+    glm::mat3 modelMatrix = glm::mat3(1);
+
+    for (auto& square : this->grid) {
+        modelMatrix =
+            visMatrix * transform2D::Translate(square.GetPosition().x,
+                                               square.GetPosition().y);
+
+        RenderMesh2D(square.GetMesh(), shaders["VertexColor"], modelMatrix);
+
+        modelMatrix = glm::mat3(1);
     }
 }
+
+void hw1::Editor::DrawScene() { this->DrawGrid(); }

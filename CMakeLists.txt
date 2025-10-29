@@ -84,6 +84,7 @@ file(GLOB_RECURSE GFXF_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/lab_${SUFFIX_LAB_M2}/*.c*
     ${CMAKE_CURRENT_LIST_DIR}/src/lab_${SUFFIX_LAB_EXTRA}/*.c*
     ${CMAKE_CURRENT_LIST_DIR}/src/lab_m1/tema01/*.c*
+    ${CMAKE_CURRENT_LIST_DIR}/src/lab_m1/tema01/*.cpp
 )
 
 

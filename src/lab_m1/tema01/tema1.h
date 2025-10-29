@@ -1,5 +1,3 @@
 #pragma once
 
-#include "components/simple_scene.h"
-
-namespace hw1 {}  // namespace hw1
+#include "lab_m1/tema01/editor.h"
