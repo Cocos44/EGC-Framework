@@ -15,6 +15,7 @@
 #include "lab_m1/tema01/line.h"
 #include "lab_m1/tema01/object.h"
 #include "lab_m1/tema01/square.h"
+#include "lab_m1/tema01/startbutton.h"
 #include "lab_m1/tema01/transform2D.h"
 
 #define LOGIC_SPACE_HEIGHT 500
@@ -36,6 +37,9 @@
 #define COUNTER_SQUARE_LENGTH 20
 #define COUNTER_HORIZONTAL_OFFSET glm::vec3(27, 0, 0)
 #define COUNTER_TOP_LEFT glm::vec3(210, 205, 0)
+
+#define START_BUTTON_LENGTH 25
+#define START_BUTTON_POSITION glm::vec3(455, 245, 0)
 
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
@@ -169,6 +173,11 @@ class Editor : public gfxc::SimpleScene {
     void CreateChoosingBlocks();
 
     /**
+     * @brief Creates the start button mesh.
+     */
+    void CreateStartButton();
+
+    /**
      * @brief Get matrix conversion for translating logic space to view space.
      * @return Conversion matrix.
      */
@@ -280,8 +289,13 @@ class Editor : public gfxc::SimpleScene {
     /**
      * @brief Draws text in current frame.
      */
-
     void DrawText();
+
+    /**
+     * @brief Draws start button.
+     */
+    void DrawStartButton();
+
     /**
      * @brief Draws scene in current frame.
      */
@@ -338,6 +352,8 @@ class Editor : public gfxc::SimpleScene {
     std::vector<Square> grid;
     std::vector<Square> componentsCounter;
     std::vector<Object> blocksToChoose;
+
+    StartButton* startButton;
 
     gfxc::TextRenderer textRenderer;
 

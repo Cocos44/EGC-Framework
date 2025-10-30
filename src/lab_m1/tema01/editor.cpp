@@ -31,6 +31,7 @@ void hw1::Editor::Init() {
 
     this->isLeftButtonHold = false;
     this->buttonHoldObject = nullptr;
+    this->startButton = nullptr;
 
     // Load text font.
     this->textRenderer.Load(
@@ -40,6 +41,7 @@ void hw1::Editor::Init() {
     this->CreateGrid();
     this->CreateChoosingBlocks();
     this->CreateComponentsCounter();
+    this->CreateStartButton();
 }
 
 void hw1::Editor::CreateEditorBorders() {
@@ -220,6 +222,21 @@ void hw1::Editor::CreateChoosingBlocks() {
         this->blocksToChoose.push_back(
             hw1::Bumper(bumperMesh, center_position, VEC3_LIGHT_GRAY));
     }
+}
+
+void hw1::Editor::CreateStartButton() {
+    Mesh* startButtonMesh = hw1::CreateStartButton(
+        "start_button", START_BUTTON_LENGTH, VEC3_GREEN, true);
+
+    AddMeshToList(startButtonMesh);
+
+    // Compute center coordinate.
+    glm::vec3 center_position =
+        START_BUTTON_POSITION +
+        glm::vec3(START_BUTTON_LENGTH / 2.0f, START_BUTTON_LENGTH / 2.0f, 0.0f);
+
+    this->startButton = new hw1::StartButton(startButtonMesh, center_position,
+                                             VEC3_GREEN, START_BUTTON_LENGTH);
 }
 
 glm::mat3 hw1::Editor::GetSpaceConversionMatrix() {
@@ -537,6 +554,18 @@ void hw1::Editor::DrawText() {
                             1.5f, glm::vec3(1.0f, 1.0f, 0.0f));
 }
 
+void hw1::Editor::DrawStartButton() {
+    glm::mat3 modelMatrix = glm::mat3(1);
+    modelMatrix = this->visMatrix *
+                  transform2D::Translate(this->startButton->GetPosition().x,
+                                         this->startButton->GetPosition().y);
+
+    this->startButton->SetColor(VEC3_RED);
+    // Render mesh.
+    RenderMesh2D(this->startButton->GetMesh(), shaders["VertexColor"],
+                 modelMatrix);
+}
+
 void hw1::Editor::DrawScene() {
     this->DrawChoosingBlocks();
     this->DrawSpaceShip();
@@ -545,6 +574,7 @@ void hw1::Editor::DrawScene() {
     this->DrawGrid();
     this->DrawCounterSection();
     this->DrawText();
+    this->DrawStartButton();
 }
 
 void hw1::Editor::RemoveFromSpaceship(const glm::vec3& position) {
