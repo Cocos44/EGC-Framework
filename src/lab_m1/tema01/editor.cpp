@@ -29,6 +29,7 @@ void hw1::Editor::Init() {
     // Create square mesh and set up grid for rendering.
     this->CreateEditorBorders();
     this->CreateGrid();
+    this->CreateChoosingBlocks();
 }
 
 void hw1::Editor::CreateEditorBorders() {
@@ -39,18 +40,62 @@ void hw1::Editor::CreateEditorBorders() {
         /**
          * WARN: DO NOT CHANGE CORNER VALUES!
          */
-        glm::vec3 bottomLeft = glm::vec3(193, 25, 0);
-        glm::vec3 topLeft = glm::vec3(193, 195, 0);
-        glm::vec3 topRight =
-            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 195, 0);
-        glm::vec3 bottomRight =
-            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 25, 0);
+        BorderCorners gridBlocksBorder(
+            "gridBlocks", glm::vec3(193, 25, 0), glm::vec3(193, 195, 0),
+            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 195, 0),
+            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 25, 0));
 
-        // Add every line based on the 4 corners created.
-        delimiters.push_back(Line(lineMesh, VEC3_RED, bottomLeft, topLeft));
-        delimiters.push_back(Line(lineMesh, VEC3_RED, topLeft, topRight));
-        delimiters.push_back(Line(lineMesh, VEC3_RED, topRight, bottomRight));
-        delimiters.push_back(Line(lineMesh, VEC3_RED, bottomRight, bottomLeft));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        gridBlocksBorder.bottomLeft,
+                                        gridBlocksBorder.topLeft));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        gridBlocksBorder.topLeft,
+                                        gridBlocksBorder.topRight));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        gridBlocksBorder.topRight,
+                                        gridBlocksBorder.bottomRight));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        gridBlocksBorder.bottomRight,
+                                        gridBlocksBorder.bottomLeft));
+
+        this->borders.push_back(gridBlocksBorder);
+    }
+
+    // Create choosing blocks border lines.
+    {
+        /**
+         * WARN: DO NOT CHANGE CORNER VALUES!
+         */
+        BorderCorners choosingBlocksBorder(
+            "choosingBlocks", glm::vec3(140, 25, 0), glm::vec3(140, 195, 0),
+            glm::vec3(1, 195, 0), glm::vec3(1, 25, 0));
+
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        choosingBlocksBorder.bottomLeft,
+                                        choosingBlocksBorder.topLeft));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        choosingBlocksBorder.topLeft,
+                                        choosingBlocksBorder.topRight));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        choosingBlocksBorder.topRight,
+                                        choosingBlocksBorder.bottomRight));
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        choosingBlocksBorder.bottomRight,
+                                        choosingBlocksBorder.bottomLeft));
+
+        this->borders.push_back(choosingBlocksBorder);
+    }
+
+    {
+        BorderCorners choosingBlockSquare(
+            "choosingBlocks", glm::vec3(140, 25, 0), glm::vec3(140, 105, 0),
+            glm::vec3(1, 105, 0), glm::vec3(1, 25, 0));
+
+        this->delimiters.push_back(Line(lineMesh, VEC3_RED,
+                                        choosingBlockSquare.topRight,
+                                        choosingBlockSquare.topLeft));
+
+        this->borders.push_back(choosingBlockSquare);
     }
 }
 
@@ -61,19 +106,36 @@ void hw1::Editor::CreateGrid() {
     for (int row = 0; row < GRID_ROW_NUMBER; row++) {
         for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
             // Compute bottom left corner.
-            glm::vec3 bottomLeft = GRID_TOP_LEFT +
-                                   (float)row * GRID_HORIZONTAL_OFFSET -
-                                   (float)column * GRID_VERTICAL_OFFSET;
+            glm::vec3 bottomLeftSquare = GRID_TOP_LEFT +
+                                         (float)row * GRID_HORIZONTAL_OFFSET -
+                                         (float)column * GRID_VERTICAL_OFFSET;
 
             // Compute center position.
             glm::vec3 center_position =
-                bottomLeft + glm::vec3(GRID_SQUARE_LENGTH / 2.0f,
-                                       GRID_SQUARE_LENGTH / 2.0f, 0.0f);
+                bottomLeftSquare + glm::vec3(GRID_SQUARE_LENGTH / 2.0f,
+                                             GRID_SQUARE_LENGTH / 2.0f, 0.0f);
 
             // Add newly created square to grid.
             this->grid.push_back(hw1::Square(squareMesh, center_position,
                                              VEC3_GREEN, GRID_SQUARE_LENGTH));
         }
+    }
+}
+
+void hw1::Editor::CreateChoosingBlocks() {
+    {
+        // Create new mesh for spaceship square.
+        Mesh* squareMesh =
+            hw1::CreateSquare("spaceship_square", BOTTOM_LEFT_CORNER,
+                              SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, true);
+        glm::vec3 bottomLeft = glm::vec3(50, 50, 0);
+        glm::vec3 center_position =
+            bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
+                                   SPACESHIP_SQUARE_LENGTH / 2.0f, 0.0f);
+
+        this->blocksToChoose.push_back(hw1::Square(squareMesh, center_position,
+                                                   VEC3_LIGHT_GRAY,
+                                                   SPACESHIP_SQUARE_LENGTH));
     }
 }
 
@@ -184,7 +246,26 @@ void hw1::Editor::DrawGrid() {
     }
 }
 
+void hw1::Editor::DrawChoosingBlocks() {
+    glm::mat3 modelMatrix = glm::mat3(1);
+
+    // Go through every choosing object to render it.
+    for (auto& square : this->blocksToChoose) {
+        // Move the square to wanted position.
+        modelMatrix =
+            visMatrix * transform2D::Translate(square.GetPosition().x,
+                                               square.GetPosition().y);
+
+        // Render mesh.
+        RenderMesh2D(square.GetMesh(), shaders["VertexColor"], modelMatrix);
+
+        // Reset modelMatrix.
+        modelMatrix = glm::mat3(1);
+    }
+}
+
 void hw1::Editor::DrawScene() {
+    this->DrawChoosingBlocks();
     this->DrawBorders();
     this->DrawGrid();
 }

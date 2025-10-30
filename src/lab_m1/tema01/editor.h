@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "components/simple_scene.h"
 #include "lab_m1/tema01/line.h"
 #include "lab_m1/tema01/object.h"
@@ -21,6 +23,8 @@
 #define GRID_ROW_NUMBER 15
 #define GRID_COLUMN_NUMBER 9
 
+#define SPACESHIP_SQUARE_LENGTH 17.5
+
 #define GRID_TOP_LEFT glm::vec3(200, 170, 0)
 #define GRID_HORIZONTAL_OFFSET glm::vec3(18, 0, 0)
 #define GRID_VERTICAL_OFFSET glm::vec3(0, 18, 0)
@@ -28,6 +32,8 @@
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
 #define VEC3_BLUE glm::vec3(0, 0, 1)
+#define VEC3_LIGHT_GRAY glm::vec3(0.75f, 0.75f, 0.75f)
+
 /**
  * @namespace hw1
  * @brief Contains all classes and methods related to the first assignment.
@@ -93,6 +99,28 @@ class Editor : public gfxc::SimpleScene {
         float height;
     };
 
+    /**
+     * @struct BorderCorners.
+     * @brief Defines corners of borders designed to delimit editor features
+     * from one another.
+     */
+    struct BorderCorners {
+        BorderCorners(std::string name, glm::vec3 bottomLeft, glm::vec3 topLeft,
+                      glm::vec3 topRight, glm::vec3 bottomRight)
+            : name(name),
+              bottomLeft(bottomLeft),
+              topLeft(topLeft),
+              topRight(topRight),
+              bottomRight(bottomRight) {}
+
+        std::string name;
+
+        glm::vec3 bottomLeft;
+        glm::vec3 topLeft;
+        glm::vec3 topRight;
+        glm::vec3 bottomRight;
+    };
+
    public:
     /**
      * @brief Initializes class fields.
@@ -117,6 +145,12 @@ class Editor : public gfxc::SimpleScene {
      * number of blocks remaining, will be clearly separated.
      */
     void CreateEditorBorders();
+
+    /**
+     * @brief Creates all blocks that a player can choose to build their
+     * spaceship with.
+     */
+    void CreateChoosingBlocks();
 
     /**
      * @brief Get matrix conversion for translating logic space to view space.
@@ -155,11 +189,20 @@ class Editor : public gfxc::SimpleScene {
      */
     void FrameEnd() override;
 
+    /**
+     * @brief Draws all lines that define all borders.
+     */
     void DrawBorders();
+
     /**
      * @brief Draws grid in current frame.
      */
     void DrawGrid();
+
+    /**
+     * @brief Draws all choosing blocks.
+     */
+    void DrawChoosingBlocks();
 
     /**
      * @brief Draws scene in current frame.
@@ -168,8 +211,11 @@ class Editor : public gfxc::SimpleScene {
 
    protected:
     std::vector<Square> grid;
+    std::vector<Object> blocksToChoose;
+
     std::vector<Line> delimiters;
-    std::vector<Object> objects;
+    std::vector<BorderCorners> borders;
+
     LogicSpace logicSpace;
     ViewSpace viewSpace;
 
