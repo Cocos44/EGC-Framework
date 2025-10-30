@@ -11,8 +11,6 @@
 
 #include "lab_m1/tema01/editor.h"
 
-#include "lab_m1/tema01/square.h"
-
 hw1::Editor::Editor() {}
 
 hw1::Editor::~Editor() {}
@@ -226,11 +224,12 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 
 void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
                                   int mods) {
+    // Get the mouse coordinates for our logic space.
+    glm::vec3 mousePositionLogicSpace =
+        this->ConvertScreenToLogicSpace(mouseX, mouseY);
+
     // Left mouse button was clicked.
     if (button == GLFW_MOUSE_BUTTON_2) {
-        // Get the mouse coordinates for our logic space.
-        glm::vec3 mousePositionLogicSpace = this->ScreenToLogic(mouseX, mouseY);
-
         // Go through every border.
         for (auto& border : this->borders) {
             // Find in which border the mouse button was presesd.
@@ -263,6 +262,9 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
                 continue;
             }
         }
+    } else if (button == GLFW_MOUSE_BUTTON_3) {
+        this->RemoveFromSpaceship(
+            this->GetSquareFromGrid(mousePositionLogicSpace));
     }
 }
 
@@ -271,38 +273,10 @@ void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
     if (button == GLFW_MOUSE_BUTTON_2) {
         if (this->buttonHoldObject != nullptr) {
             // Convert mouse position to logic space
-            glm::vec3 mousePosition = this->ScreenToLogic(mouseX, mouseY);
+            glm::vec3 mousePositionLogicSpace =
+                this->ConvertScreenToLogicSpace(mouseX, mouseY);
 
-            // Check if mouse is inside any border
-            for (const auto& border : this->borders) {
-                if (this->IsInsideBorder(mousePosition, border)) {
-                    // Only place blocks inside the grid
-                    if (border.name == "gridBlocks") {
-                        glm::vec3 resultCoordinate =
-                            this->GetSquareFromGrid(mousePosition);
-
-                        // If the mouse is over a valid grid square
-                        if (resultCoordinate.x >= 0 &&
-                            resultCoordinate.y >= 0) {
-                            std::string meshID =
-                                this->buttonHoldObject->GetMesh()->GetMeshID();
-
-                            if (meshID == "spaceship_square") {
-                                // Add new square to spaceship vector
-                                this->spaceship.push_back(
-                                    Square(meshes["spaceship_square"],
-                                           resultCoordinate, VEC3_LIGHT_GRAY,
-                                           SPACESHIP_SQUARE_LENGTH));
-                            } else if (meshID == "spaceship_bumper") {
-                                // Add new bumper to spaceship vector
-                                this->spaceship.push_back(
-                                    Bumper(meshes["spaceship_bumper"],
-                                           resultCoordinate, VEC3_LIGHT_GRAY));
-                            }
-                        }
-                    }
-                }
-            }
+            this->PlaceObjectInGrid(mousePositionLogicSpace);
 
             // Clean up dragged object
             delete this->buttonHoldObject;
@@ -312,13 +286,47 @@ void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
     }
 }
 
+void hw1::Editor::PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace) {
+    for (const auto& border : this->borders) {
+        if (border.name == "gridBlocks" &&
+            this->IsInsideBorder(mousePositionLogicSpace, border)) {
+            glm::vec3 resultCoordinate =
+                this->GetSquareFromGrid(mousePositionLogicSpace);
+
+            // If the mouse is over a valid grid square and object is not
+            // already there.
+            if (resultCoordinate.x >= 0 && resultCoordinate.y >= 0 &&
+                !this->InSpaceShip(resultCoordinate)) {
+                std::string meshID =
+                    this->buttonHoldObject->GetMesh()->GetMeshID();
+
+                if (meshID == "spaceship_square") {
+                    // Add new square to spaceship vector.
+                    this->spaceship.push_back(
+                        Square(meshes["spaceship_square"], resultCoordinate,
+                               VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH));
+                } else if (meshID == "spaceship_bumper") {
+                    // Add new bumper to spaceship vector.
+                    this->spaceship.push_back(Bumper(meshes["spaceship_bumper"],
+                                                     resultCoordinate,
+                                                     VEC3_LIGHT_GRAY));
+                }
+            }
+
+            // No need to check further objects.
+            break;
+        }
+    }
+}
+
 void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
     if (this->isLeftButtonHold && this->buttonHoldObject != nullptr) {
         // Convert mouse coordinates to logic space
-        glm::vec3 mousePosition = this->ScreenToLogic(mouseX, mouseY);
+        glm::vec3 mousePositionLogicSpace =
+            this->ConvertScreenToLogicSpace(mouseX, mouseY);
 
         // Update the object position
-        this->buttonHoldObject->SetPosition(mousePosition);
+        this->buttonHoldObject->SetPosition(mousePositionLogicSpace);
 
         // Build the model matrix using the updated position
     }
@@ -443,7 +451,17 @@ void hw1::Editor::DrawScene() {
     this->DrawGrid();
 }
 
-glm::vec3 hw1::Editor::GetSquareFromGrid(const glm::vec3 mousePosition) {
+void hw1::Editor::RemoveFromSpaceship(const glm::vec3& position) {
+    for (auto it = spaceship.begin(); it != spaceship.end(); ++it) {
+        if (it->GetPosition() == position) {
+            spaceship.erase(it);
+            return;
+        }
+    }
+}
+
+glm::vec3 hw1::Editor::GetSquareFromGrid(
+    const glm::vec3& mousePositionLogicSpace) {
     for (const auto& square : this->grid) {
         glm::vec3 bottomLeft =
             square.GetPosition() -
@@ -452,8 +470,10 @@ glm::vec3 hw1::Editor::GetSquareFromGrid(const glm::vec3 mousePosition) {
             square.GetPosition() +
             glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
 
-        if (mousePosition.x >= bottomLeft.x && mousePosition.x <= topRight.x &&
-            mousePosition.y >= bottomLeft.y && mousePosition.y <= topRight.y) {
+        if (mousePositionLogicSpace.x >= bottomLeft.x &&
+            mousePositionLogicSpace.x <= topRight.x &&
+            mousePositionLogicSpace.y >= bottomLeft.y &&
+            mousePositionLogicSpace.y <= topRight.y) {
             return square.GetPosition();
         }
     }
@@ -461,7 +481,7 @@ glm::vec3 hw1::Editor::GetSquareFromGrid(const glm::vec3 mousePosition) {
     return glm::vec3(-1, -1, 0);
 }
 
-glm::vec3 hw1::Editor::ScreenToLogic(int mouseX, int mouseY) {
+glm::vec3 hw1::Editor::ConvertScreenToLogicSpace(int mouseX, int mouseY) {
     int windowHeight = window->GetResolution().y;
     float flippedY = windowHeight - mouseY;
 
@@ -474,10 +494,17 @@ glm::vec3 hw1::Editor::ScreenToLogic(int mouseX, int mouseY) {
     return glm::vec3(logicX, logicY, 0);
 }
 
-bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePosition,
+bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
                                  const BorderCorners& border) const {
-    return (mousePosition.x >= border.bottomLeft.x) &&
-           (mousePosition.y >= border.bottomLeft.y) &&
-           (mousePosition.x <= border.topRight.x) &&
-           (mousePosition.y <= border.topRight.y);
+    return (mousePositionLogicSpace.x >= border.bottomLeft.x) &&
+           (mousePositionLogicSpace.y >= border.bottomLeft.y) &&
+           (mousePositionLogicSpace.x <= border.topRight.x) &&
+           (mousePositionLogicSpace.y <= border.topRight.y);
+}
+
+bool hw1::Editor::InSpaceShip(const glm::vec3& position) {
+    for (auto& object : this->spaceship)
+        if (object.GetPosition() == position) return true;
+
+    return false;
 }

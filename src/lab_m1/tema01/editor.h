@@ -204,6 +204,8 @@ class Editor : public gfxc::SimpleScene {
     void OnMouseBtnRelease(int mouseX, int mouseY, int button,
                            int mods) override;
 
+    void PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace);
+
     /**
      * @brief Event for mouse movement. Renders mesh if the player chose a block
      * to place in grid.
@@ -250,9 +252,14 @@ class Editor : public gfxc::SimpleScene {
     void DrawScene();
 
     /**
+     * @brief Removes an object from the spaceship based on its coordinates.
+     */
+    void RemoveFromSpaceship(const glm::vec3& position);
+
+    /**
      * @brief Gets the grid square from which mouse was released.
      */
-    glm::vec3 GetSquareFromGrid(const glm::vec3 mousePosition);
+    glm::vec3 GetSquareFromGrid(const glm::vec3& mousePosition);
 
     /**
      * @brief Converts screen coordinates (pixels) to logic space coordinates.
@@ -261,13 +268,18 @@ class Editor : public gfxc::SimpleScene {
      * @param mouseY - Mouse Y position in pixels.
      * @return Position in logic space
      */
-    glm::vec3 ScreenToLogic(int mouseX, int mouseY);
+    glm::vec3 ConvertScreenToLogicSpace(int mouseX, int mouseY);
 
     /**
      * @brief Checks in which border the mouse was clicked.
      */
     bool IsInsideBorder(const glm::vec3& mousePosition,
                         const BorderCorners& border) const;
+
+    /**
+     * @brief Checks if the grid square is used.
+     */
+    bool InSpaceShip(const glm::vec3& position);
 
    protected:
     std::vector<Square> grid;
