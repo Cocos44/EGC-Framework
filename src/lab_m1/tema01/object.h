@@ -31,7 +31,7 @@ class Object {
 
    public:
     Mesh* GetMesh() const { return this->mesh; }
-    glm::vec2 GetPosition() const { return this->position; }
+    glm::vec3 GetPosition() const { return this->position; }
     glm::vec3 GetColor() const { return this->color; }
     bool IsActive() const { return this->active; }
 

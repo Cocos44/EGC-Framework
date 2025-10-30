@@ -24,7 +24,7 @@
 #define GRID_ROW_NUMBER 15
 #define GRID_COLUMN_NUMBER 9
 
-#define SPACESHIP_SQUARE_LENGTH 17.5
+#define SPACESHIP_SQUARE_LENGTH 18
 
 #define GRID_TOP_LEFT glm::vec3(205, 176, 0)
 #define GRID_HORIZONTAL_OFFSET glm::vec3(18, 0, 0)
@@ -240,9 +240,19 @@ class Editor : public gfxc::SimpleScene {
     void DrawHoldObject();
 
     /**
+     * @brief Draws spaceship in grid.
+     */
+    void DrawSpaceShip();
+
+    /**
      * @brief Draws scene in current frame.
      */
     void DrawScene();
+
+    /**
+     * @brief Gets the grid square from which mouse was released.
+     */
+    glm::vec3 GetSquareFromGrid(const glm::vec3 mousePosition);
 
     /**
      * @brief Converts screen coordinates (pixels) to logic space coordinates.
@@ -265,6 +275,8 @@ class Editor : public gfxc::SimpleScene {
 
     std::vector<Line> delimiters;
     std::vector<BorderCorners> borders;
+
+    std::vector<Object> spaceship;
 
     bool isLeftButtonHold;
     Object* buttonHoldObject;

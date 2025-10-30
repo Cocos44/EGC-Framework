@@ -15,8 +15,7 @@ class Bumper : public hw1::Object {
     Bumper(Mesh* mesh, glm::vec3 position, glm::vec3 color, bool active = true);
 };
 
-Mesh* CreateBumperMesh(std::string name, float squareLength,
-                       glm::vec3 squareColor, glm::vec3 semicircleColor,
-                       bool fill = true);
+Mesh* CreateBumper(std::string name, float squareLength, glm::vec3 squareColor,
+                   glm::vec3 semicircleColor, bool fill = true);
 
 }  // namespace hw1

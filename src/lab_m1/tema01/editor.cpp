@@ -11,6 +11,8 @@
 
 #include "lab_m1/tema01/editor.h"
 
+#include "lab_m1/tema01/square.h"
+
 hw1::Editor::Editor() {}
 
 hw1::Editor::~Editor() {}
@@ -110,7 +112,7 @@ void hw1::Editor::CreateEditorBorders() {
 
 void hw1::Editor::CreateGrid() {
     Mesh* squareMesh =
-        hw1::CreateSquare("grid_square", GRID_SQUARE_LENGTH, VEC3_GREEN, true);
+        hw1::CreateSquare("grid_square", GRID_SQUARE_LENGTH, VEC3_BLUE, true);
     // When creating square we need to remember the center coordinate.
     for (int row = 0; row < GRID_ROW_NUMBER; row++) {
         for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
@@ -149,8 +151,8 @@ void hw1::Editor::CreateChoosingBlocks() {
 
     {
         Mesh* bumperMesh =
-            hw1::CreateBumperMesh("spaceship_bumper", SPACESHIP_SQUARE_LENGTH,
-                                  VEC3_LIGHT_GRAY, VEC3_BLUE);
+            hw1::CreateBumper("spaceship_bumper", SPACESHIP_SQUARE_LENGTH,
+                              VEC3_LIGHT_GRAY, VEC3_GREEN);
         AddMeshToList(bumperMesh);
 
         glm::vec3 bottomLeft = glm::vec3(60, 120, 0);
@@ -267,11 +269,45 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
 void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
                                     int mods) {
     if (button == GLFW_MOUSE_BUTTON_2) {
-        if (this->buttonHoldObject != nullptr) this->isLeftButtonHold = false;
-
         if (this->buttonHoldObject != nullptr) {
+            // Convert mouse position to logic space
+            glm::vec3 mousePosition = this->ScreenToLogic(mouseX, mouseY);
+
+            // Check if mouse is inside any border
+            for (const auto& border : this->borders) {
+                if (this->IsInsideBorder(mousePosition, border)) {
+                    // Only place blocks inside the grid
+                    if (border.name == "gridBlocks") {
+                        glm::vec3 resultCoordinate =
+                            this->GetSquareFromGrid(mousePosition);
+
+                        // If the mouse is over a valid grid square
+                        if (resultCoordinate.x >= 0 &&
+                            resultCoordinate.y >= 0) {
+                            std::string meshID =
+                                this->buttonHoldObject->GetMesh()->GetMeshID();
+
+                            if (meshID == "spaceship_square") {
+                                // Add new square to spaceship vector
+                                this->spaceship.push_back(
+                                    Square(meshes["spaceship_square"],
+                                           resultCoordinate, VEC3_LIGHT_GRAY,
+                                           SPACESHIP_SQUARE_LENGTH));
+                            } else if (meshID == "spaceship_bumper") {
+                                // Add new bumper to spaceship vector
+                                this->spaceship.push_back(
+                                    Bumper(meshes["spaceship_bumper"],
+                                           resultCoordinate, VEC3_LIGHT_GRAY));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Clean up dragged object
             delete this->buttonHoldObject;
             this->buttonHoldObject = nullptr;
+            this->isLeftButtonHold = false;
         }
     }
 }
@@ -339,11 +375,10 @@ void hw1::Editor::DrawGrid() {
 void hw1::Editor::DrawChoosingBlocks() {
     glm::mat3 modelMatrix = glm::mat3(1);
 
-    std::string square_name = "spaceship_square";
-    std::string bumper_name = "spaceship_bumper";
     // Go through every choosing object to render it.
     for (auto& object : this->blocksToChoose) {
-        if (object.GetMesh()->GetMeshID() == square_name) {
+        std::string meshID = object.GetMesh()->GetMeshID();
+        if (meshID == "spaceship_square") {
             // Move the square to wanted position.
             modelMatrix =
                 visMatrix * transform2D::Translate(object.GetPosition().x,
@@ -356,7 +391,7 @@ void hw1::Editor::DrawChoosingBlocks() {
             modelMatrix = glm::mat3(1);
         }
 
-        else if (object.GetMesh()->GetMeshID() == bumper_name) {
+        else if (meshID == "spaceship_bumper") {
             // Move the bumper to wanted position.
             modelMatrix =
                 visMatrix * transform2D::Translate(object.GetPosition().x,
@@ -382,11 +417,48 @@ void hw1::Editor::DrawHoldObject() {
     }
 }
 
+void hw1::Editor::DrawSpaceShip() {
+    glm::mat3 modelMatrix = glm::mat3(1);
+
+    // Go through every spaceship object to render it.
+    for (auto& object : this->spaceship) {
+        // Move the square to wanted position.
+        modelMatrix =
+            visMatrix * transform2D::Translate(object.GetPosition().x,
+                                               object.GetPosition().y);
+
+        // Render mesh.
+        RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
+
+        // Reset modelMatrix.
+        modelMatrix = glm::mat3(1);
+    }
+}
+
 void hw1::Editor::DrawScene() {
     this->DrawChoosingBlocks();
+    this->DrawSpaceShip();
     this->DrawHoldObject();
     this->DrawBorders();
     this->DrawGrid();
+}
+
+glm::vec3 hw1::Editor::GetSquareFromGrid(const glm::vec3 mousePosition) {
+    for (const auto& square : this->grid) {
+        glm::vec3 bottomLeft =
+            square.GetPosition() -
+            glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
+        glm::vec3 topRight =
+            square.GetPosition() +
+            glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
+
+        if (mousePosition.x >= bottomLeft.x && mousePosition.x <= topRight.x &&
+            mousePosition.y >= bottomLeft.y && mousePosition.y <= topRight.y) {
+            return square.GetPosition();
+        }
+    }
+
+    return glm::vec3(-1, -1, 0);
 }
 
 glm::vec3 hw1::Editor::ScreenToLogic(int mouseX, int mouseY) {
