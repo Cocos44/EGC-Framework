@@ -13,22 +13,21 @@ hw1::Bumper::Bumper(Mesh* mesh, glm::vec3 position, glm::vec3 color,
 Mesh* hw1::CreateBumperMesh(std::string name, float squareLength,
                             glm::vec3 squareColor, glm::vec3 semicircleColor,
                             bool fill) {
-    // Create vertices for square base.
+    // Offset so that square is centered at (0, 0)
+    glm::vec3 offset = glm::vec3(-squareLength / 2.0f, -squareLength / 2.0f, 0);
+
     std::vector<VertexFormat> vertices = {
-        VertexFormat(glm::vec3(1, 0, 0), squareColor),
-        VertexFormat(glm::vec3(1, 0, 0) + glm::vec3(squareLength, 0, 0),
+        VertexFormat(offset, squareColor),
+        VertexFormat(glm::vec3(squareLength, 0, 0) + offset, squareColor),
+        VertexFormat(glm::vec3(squareLength, squareLength, 0) + offset,
                      squareColor),
-        VertexFormat(
-            glm::vec3(1, 0, 0) + glm::vec3(squareLength, squareLength, 0),
-            squareColor),
-        VertexFormat(glm::vec3(1, 0, 0) + glm::vec3(0, squareLength, 0),
-                     squareColor)};
+        VertexFormat(glm::vec3(0, squareLength, 0) + offset, squareColor)};
 
     std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
 
     int segments = 100;
     float radius = 1.5f * squareLength;
-    glm::vec3 center = glm::vec3(1.5f + (squareLength / 2), squareLength, 0);
+    glm::vec3 center = glm::vec3(0, squareLength / 2, 0);
 
     int startIndex = vertices.size();
     vertices.push_back(VertexFormat(center, semicircleColor));
@@ -47,7 +46,7 @@ Mesh* hw1::CreateBumperMesh(std::string name, float squareLength,
         indices.push_back(startIndex + i + 1);
     }
 
-    Mesh* bumperMesh = new Mesh("bumper");
+    Mesh* bumperMesh = new Mesh(name);
 
     if (!fill) {
         bumperMesh->SetDrawMode(GL_LINE_LOOP);

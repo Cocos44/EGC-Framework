@@ -11,11 +11,13 @@ hw1::Square::Square(Mesh* mesh, glm::vec3 position, glm::vec3 color,
 
 Mesh* hw1::CreateSquare(const std::string& name, float length, glm::vec3 color,
                         bool fill) {
+    glm::vec3 offset = glm::vec3(-length / 2.0f, -length / 2.0f, 0);
+
     std::vector<VertexFormat> vertices = {
-        VertexFormat(BOTTOM_LEFT_CORNER, color),
-        VertexFormat(BOTTOM_LEFT_CORNER + glm::vec3(length, 0, 0), color),
-        VertexFormat(BOTTOM_LEFT_CORNER + glm::vec3(length, length, 0), color),
-        VertexFormat(BOTTOM_LEFT_CORNER + glm::vec3(0, length, 0), color)};
+        VertexFormat(offset, color),
+        VertexFormat(offset + glm::vec3(length, 0, 0), color),
+        VertexFormat(offset + glm::vec3(length, length, 0), color),
+        VertexFormat(offset + glm::vec3(0, length, 0), color)};
 
     Mesh* square = new Mesh(name);
     std::vector<unsigned int> indices = {0, 1, 2, 3};

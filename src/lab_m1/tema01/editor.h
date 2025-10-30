@@ -10,6 +10,7 @@
 #include <string>
 
 #include "components/simple_scene.h"
+#include "lab_m1/tema01/bumper.h"
 #include "lab_m1/tema01/line.h"
 #include "lab_m1/tema01/object.h"
 #include "lab_m1/tema01/square.h"
@@ -25,7 +26,7 @@
 
 #define SPACESHIP_SQUARE_LENGTH 17.5
 
-#define GRID_TOP_LEFT glm::vec3(200, 170, 0)
+#define GRID_TOP_LEFT glm::vec3(205, 176, 0)
 #define GRID_HORIZONTAL_OFFSET glm::vec3(18, 0, 0)
 #define GRID_VERTICAL_OFFSET glm::vec3(0, 18, 0)
 
@@ -185,6 +186,35 @@ class Editor : public gfxc::SimpleScene {
     void Update(float deltaTimeSeconds) override;
 
     /**
+     * @brief Checks what mouse button was clicked and where it was clicked.
+     * @param mouseX - Mouse X position.
+     * @param mouseY - Mouse Y position.
+     * @param button - Button clicked.
+     * @param mods - Modifiers (not used).
+     */
+    void OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) override;
+
+    /**
+     * @brief Checks what mouse button was released and where it was released.
+     * @param mouseX - Mouse X position.
+     * @param mouseY - Mouse Y position.
+     * @param button - Button clicked.
+     * @param mods - Modifiers (not used).
+     */
+    void OnMouseBtnRelease(int mouseX, int mouseY, int button,
+                           int mods) override;
+
+    /**
+     * @brief Event for mouse movement. Renders mesh if the player chose a block
+     * to place in grid.
+     * @param mouseX - Mouse X position.
+     * @param mouseY - Mouse Y position.
+     * @param deltaX - Change in mouse X coordinate since last frame.
+     * @param deltaY - Change in mouse Y coordinate since last frame.
+     */
+    void OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) override;
+
+    /**
      * @brief Logic for handling frame end.
      */
     void FrameEnd() override;
@@ -205,9 +235,29 @@ class Editor : public gfxc::SimpleScene {
     void DrawChoosingBlocks();
 
     /**
+     * @brief Draws object being held with mouse.
+     */
+    void DrawHoldObject();
+
+    /**
      * @brief Draws scene in current frame.
      */
     void DrawScene();
+
+    /**
+     * @brief Converts screen coordinates (pixels) to logic space coordinates.
+     *
+     * @param mouseX - Mouse X position in pixels.
+     * @param mouseY - Mouse Y position in pixels.
+     * @return Position in logic space
+     */
+    glm::vec3 ScreenToLogic(int mouseX, int mouseY);
+
+    /**
+     * @brief Checks in which border the mouse was clicked.
+     */
+    bool IsInsideBorder(const glm::vec3& mousePosition,
+                        const BorderCorners& border) const;
 
    protected:
     std::vector<Square> grid;
@@ -215,6 +265,9 @@ class Editor : public gfxc::SimpleScene {
 
     std::vector<Line> delimiters;
     std::vector<BorderCorners> borders;
+
+    bool isLeftButtonHold;
+    Object* buttonHoldObject;
 
     LogicSpace logicSpace;
     ViewSpace viewSpace;

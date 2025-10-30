@@ -11,8 +11,6 @@
 
 #include "lab_m1/tema01/editor.h"
 
-#include "lab_m1/tema01/bumper.h"
-
 hw1::Editor::Editor() {}
 
 hw1::Editor::~Editor() {}
@@ -27,6 +25,9 @@ void hw1::Editor::Init() {
     // Create logic space.
     this->logicSpace =
         hw1::Editor::LogicSpace(0, 0, LOGIC_SPACE_WIDTH, LOGIC_SPACE_HEIGHT);
+
+    this->isLeftButtonHold = false;
+    this->buttonHoldObject = nullptr;
 
     // Create square mesh and set up grid for rendering.
     this->CreateEditorBorders();
@@ -88,14 +89,15 @@ void hw1::Editor::CreateEditorBorders() {
         this->borders.push_back(choosingBlocksBorder);
     }
 
+    // Create border for every choose block.
     {
         BorderCorners choosingBlockSquare(
-            "chooseSquare", glm::vec3(140, 25, 0), glm::vec3(140, 105, 0),
-            glm::vec3(1, 105, 0), glm::vec3(1, 25, 0));
+            "chooseSquare", glm::vec3(1, 25, 0), glm::vec3(1, 105, 0),
+            glm::vec3(140, 105, 0), glm::vec3(140, 25, 0));
 
         BorderCorners choosingBlockBumper(
-            "chooseSquare", glm::vec3(140, 105, 0), glm::vec3(140, 195, 0),
-            glm::vec3(1, 195, 0), glm::vec3(1, 105, 0));
+            "chooseBumper", glm::vec3(1, 105, 0), glm::vec3(1, 195, 0),
+            glm::vec3(140, 195, 0), glm::vec3(140, 105, 0));
 
         this->delimiters.push_back(Line(lineMesh, VEC3_RED,
                                         choosingBlockSquare.topRight,
@@ -134,7 +136,8 @@ void hw1::Editor::CreateChoosingBlocks() {
         // Create new mesh for spaceship square.
         Mesh* squareMesh = hw1::CreateSquare(
             "spaceship_square", SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, true);
-        glm::vec3 bottomLeft = glm::vec3(50, 50, 0);
+        AddMeshToList(squareMesh);
+        glm::vec3 bottomLeft = glm::vec3(60, 50, 0);
         glm::vec3 center_position =
             bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
                                    SPACESHIP_SQUARE_LENGTH / 2.0f, 0.0f);
@@ -145,9 +148,12 @@ void hw1::Editor::CreateChoosingBlocks() {
     }
 
     {
-        Mesh* bumperMesh = hw1::CreateBumperMesh(
-            "bumper", SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, VEC3_BLUE);
-        glm::vec3 bottomLeft = glm::vec3(50, 120, 0);
+        Mesh* bumperMesh =
+            hw1::CreateBumperMesh("spaceship_bumper", SPACESHIP_SQUARE_LENGTH,
+                                  VEC3_LIGHT_GRAY, VEC3_BLUE);
+        AddMeshToList(bumperMesh);
+
+        glm::vec3 bottomLeft = glm::vec3(60, 120, 0);
         glm::vec3 center_position =
             bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
                                    SPACESHIP_SQUARE_LENGTH / 2.0f, 0.0f);
@@ -216,6 +222,72 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
     DrawScene();
 }
 
+void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
+                                  int mods) {
+    // Left mouse button was clicked.
+    if (button == GLFW_MOUSE_BUTTON_2) {
+        // Get the mouse coordinates for our logic space.
+        glm::vec3 mousePositionLogicSpace = this->ScreenToLogic(mouseX, mouseY);
+
+        // Go through every border.
+        for (auto& border : this->borders) {
+            // Find in which border the mouse button was presesd.
+            if (this->IsInsideBorder(mousePositionLogicSpace, border)) {
+                if (border.name == "chooseSquare") {
+                    this->buttonHoldObject = new Square(
+                        meshes["spaceship_square"], mousePositionLogicSpace,
+                        VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH);
+                }
+
+                else if (border.name == "chooseBumper") {
+                    this->buttonHoldObject =
+                        new Bumper(meshes["spaceship_bumper"],
+                                   mousePositionLogicSpace, VEC3_LIGHT_GRAY);
+                }
+                if (border.name == "chooseSquare") {
+                    this->isLeftButtonHold = true;
+
+                    this->buttonHoldObject = new Square(
+                        meshes["spaceship_square"], mousePositionLogicSpace,
+                        VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH);
+                } else if (border.name == "chooseBumper") {
+                    this->isLeftButtonHold = true;
+
+                    this->buttonHoldObject = new Bumper(
+                        meshes["spaceship_bumper"], mousePositionLogicSpace,
+                        VEC3_LIGHT_GRAY, true);
+                }
+            } else {
+                continue;
+            }
+        }
+    }
+}
+
+void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
+                                    int mods) {
+    if (button == GLFW_MOUSE_BUTTON_2) {
+        if (this->buttonHoldObject != nullptr) this->isLeftButtonHold = false;
+
+        if (this->buttonHoldObject != nullptr) {
+            delete this->buttonHoldObject;
+            this->buttonHoldObject = nullptr;
+        }
+    }
+}
+
+void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
+    if (this->isLeftButtonHold && this->buttonHoldObject != nullptr) {
+        // Convert mouse coordinates to logic space
+        glm::vec3 mousePosition = this->ScreenToLogic(mouseX, mouseY);
+
+        // Update the object position
+        this->buttonHoldObject->SetPosition(mousePosition);
+
+        // Build the model matrix using the updated position
+    }
+}
+
 void hw1::Editor::FrameEnd() {}
 
 void hw1::Editor::DrawBorders() {
@@ -268,7 +340,7 @@ void hw1::Editor::DrawChoosingBlocks() {
     glm::mat3 modelMatrix = glm::mat3(1);
 
     std::string square_name = "spaceship_square";
-    std::string bumper_name = "bumper";
+    std::string bumper_name = "spaceship_bumper";
     // Go through every choosing object to render it.
     for (auto& object : this->blocksToChoose) {
         if (object.GetMesh()->GetMeshID() == square_name) {
@@ -298,8 +370,42 @@ void hw1::Editor::DrawChoosingBlocks() {
     }
 }
 
+void hw1::Editor::DrawHoldObject() {
+    // Render the mesh
+    if (this->isLeftButtonHold && (this->buttonHoldObject != nullptr)) {
+        glm::mat3 modelMatrix = glm::mat3(1);
+        modelMatrix = visMatrix * transform2D::Translate(
+                                      this->buttonHoldObject->GetPosition().x,
+                                      this->buttonHoldObject->GetPosition().y);
+        RenderMesh2D(this->buttonHoldObject->GetMesh(), shaders["VertexColor"],
+                     modelMatrix);
+    }
+}
+
 void hw1::Editor::DrawScene() {
     this->DrawChoosingBlocks();
+    this->DrawHoldObject();
     this->DrawBorders();
     this->DrawGrid();
+}
+
+glm::vec3 hw1::Editor::ScreenToLogic(int mouseX, int mouseY) {
+    int windowHeight = window->GetResolution().y;
+    float flippedY = windowHeight - mouseY;
+
+    float normalX = float(mouseX - viewSpace.x) / viewSpace.width;
+    float normalY = float(flippedY - viewSpace.y) / viewSpace.height;
+
+    float logicX = logicSpace.x + normalX * logicSpace.width;
+    float logicY = logicSpace.y + normalY * logicSpace.height;
+
+    return glm::vec3(logicX, logicY, 0);
+}
+
+bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePosition,
+                                 const BorderCorners& border) const {
+    return (mousePosition.x >= border.bottomLeft.x) &&
+           (mousePosition.y >= border.bottomLeft.y) &&
+           (mousePosition.x <= border.topRight.x) &&
+           (mousePosition.y <= border.topRight.y);
 }
