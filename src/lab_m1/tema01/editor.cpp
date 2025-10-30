@@ -11,9 +11,9 @@
 
 #include "lab_m1/tema01/editor.h"
 
-#include <iostream>
-
-hw1::Editor::Editor() {}
+hw1::Editor::Editor()
+    : textRenderer("/home/vlad/Dev/EGC/EGC-Framework",
+                   window->GetResolution().x, window->GetResolution().y) {}
 
 hw1::Editor::~Editor() {}
 
@@ -32,7 +32,10 @@ void hw1::Editor::Init() {
     this->isLeftButtonHold = false;
     this->buttonHoldObject = nullptr;
 
-    // Create square mesh and set up grid for rendering.
+    // Load text font.
+    this->textRenderer.Load(
+        "/home/vlad/Dev/EGC/EGC-Framework/assets/fonts/Hack-Bold.ttf", 40);
+
     this->CreateEditorBorders();
     this->CreateGrid();
     this->CreateChoosingBlocks();
@@ -475,13 +478,13 @@ void hw1::Editor::DrawChoosingBlocks() {
 }
 
 void hw1::Editor::DrawHoldObject() {
-    // Render the mesh
     if (this->isLeftButtonHold && (this->buttonHoldObject != nullptr)) {
         glm::mat3 modelMatrix = glm::mat3(1);
         modelMatrix =
             this->visMatrix *
             transform2D::Translate(this->buttonHoldObject->GetPosition().x,
                                    this->buttonHoldObject->GetPosition().y);
+        // Render the mesh
         RenderMesh2D(this->buttonHoldObject->GetMesh(), shaders["VertexColor"],
                      modelMatrix);
     }
@@ -523,6 +526,17 @@ void hw1::Editor::DrawCounterSection() {
         modelMatrix = glm::mat3(1);
     }
 }
+
+void hw1::Editor::DrawText() {
+    // Use visMatrix to convert logic space to screen space
+    glm::vec3 startingPosition =
+        visMatrix * (BOTTOM_LEFT_CORNER + glm::vec3(50, 40, 0));
+
+    // Render the text
+    textRenderer.RenderText("BREAKOUT", startingPosition.x, startingPosition.y,
+                            1.5f, glm::vec3(1.0f, 1.0f, 0.0f));
+}
+
 void hw1::Editor::DrawScene() {
     this->DrawChoosingBlocks();
     this->DrawSpaceShip();
@@ -530,6 +544,7 @@ void hw1::Editor::DrawScene() {
     this->DrawBorders();
     this->DrawGrid();
     this->DrawCounterSection();
+    this->DrawText();
 }
 
 void hw1::Editor::RemoveFromSpaceship(const glm::vec3& position) {

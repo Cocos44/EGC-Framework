@@ -10,6 +10,7 @@
 #include <string>
 
 #include "components/simple_scene.h"
+#include "components/text_renderer.h"
 #include "lab_m1/tema01/bumper.h"
 #include "lab_m1/tema01/line.h"
 #include "lab_m1/tema01/object.h"
@@ -246,7 +247,7 @@ class Editor : public gfxc::SimpleScene {
     void FrameEnd() override;
 
     /**
-     * @brief Draws all lines that define all borders.
+     * @brief Draws all lines that define all borders in current frame.
      */
     void DrawBorders();
 
@@ -256,24 +257,31 @@ class Editor : public gfxc::SimpleScene {
     void DrawGrid();
 
     /**
-     * @brief Draws all choosing blocks.
+     * @brief Draws all choosing blocks in current frame.
      */
     void DrawChoosingBlocks();
 
     /**
-     * @brief Draws object being held with mouse.
+     * @brief Draws object being held with mouse in current frame.
      */
     void DrawHoldObject();
 
     /**
-     * @brief Draws spaceship in grid.
+     * @brief Draws spaceship in grid in current frame.
      */
     void DrawSpaceShip();
 
     /**
-     * @brief Draws counter section by number of components left for spaceship.
+     * @brief Draws counter section by number of components left for spaceship
+     * in current frame.
      */
     void DrawCounterSection();
+
+    /**
+     * @brief Draws text in current frame.
+     */
+
+    void DrawText();
     /**
      * @brief Draws scene in current frame.
      */
@@ -330,6 +338,8 @@ class Editor : public gfxc::SimpleScene {
     std::vector<Square> grid;
     std::vector<Square> componentsCounter;
     std::vector<Object> blocksToChoose;
+
+    gfxc::TextRenderer textRenderer;
 
     std::vector<Line> delimiters;
     std::vector<BorderCorners> borders;
