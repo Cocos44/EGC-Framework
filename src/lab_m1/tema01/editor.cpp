@@ -11,6 +11,8 @@
 
 #include "lab_m1/tema01/editor.h"
 
+#include "lab_m1/tema01/bumper.h"
+
 hw1::Editor::Editor() {}
 
 hw1::Editor::~Editor() {}
@@ -88,20 +90,25 @@ void hw1::Editor::CreateEditorBorders() {
 
     {
         BorderCorners choosingBlockSquare(
-            "choosingBlocks", glm::vec3(140, 25, 0), glm::vec3(140, 105, 0),
+            "chooseSquare", glm::vec3(140, 25, 0), glm::vec3(140, 105, 0),
             glm::vec3(1, 105, 0), glm::vec3(1, 25, 0));
+
+        BorderCorners choosingBlockBumper(
+            "chooseSquare", glm::vec3(140, 105, 0), glm::vec3(140, 195, 0),
+            glm::vec3(1, 195, 0), glm::vec3(1, 105, 0));
 
         this->delimiters.push_back(Line(lineMesh, VEC3_RED,
                                         choosingBlockSquare.topRight,
                                         choosingBlockSquare.topLeft));
 
         this->borders.push_back(choosingBlockSquare);
+        this->borders.push_back(choosingBlockBumper);
     }
 }
 
 void hw1::Editor::CreateGrid() {
-    Mesh* squareMesh = hw1::CreateSquare("grid_square", BOTTOM_LEFT_CORNER,
-                                         GRID_SQUARE_LENGTH, VEC3_GREEN, true);
+    Mesh* squareMesh =
+        hw1::CreateSquare("grid_square", GRID_SQUARE_LENGTH, VEC3_GREEN, true);
     // When creating square we need to remember the center coordinate.
     for (int row = 0; row < GRID_ROW_NUMBER; row++) {
         for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
@@ -125,9 +132,8 @@ void hw1::Editor::CreateGrid() {
 void hw1::Editor::CreateChoosingBlocks() {
     {
         // Create new mesh for spaceship square.
-        Mesh* squareMesh =
-            hw1::CreateSquare("spaceship_square", BOTTOM_LEFT_CORNER,
-                              SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, true);
+        Mesh* squareMesh = hw1::CreateSquare(
+            "spaceship_square", SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, true);
         glm::vec3 bottomLeft = glm::vec3(50, 50, 0);
         glm::vec3 center_position =
             bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
@@ -136,6 +142,18 @@ void hw1::Editor::CreateChoosingBlocks() {
         this->blocksToChoose.push_back(hw1::Square(squareMesh, center_position,
                                                    VEC3_LIGHT_GRAY,
                                                    SPACESHIP_SQUARE_LENGTH));
+    }
+
+    {
+        Mesh* bumperMesh = hw1::CreateBumperMesh(
+            "bumper", SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, VEC3_BLUE);
+        glm::vec3 bottomLeft = glm::vec3(50, 120, 0);
+        glm::vec3 center_position =
+            bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
+                                   SPACESHIP_SQUARE_LENGTH / 2.0f, 0.0f);
+
+        this->blocksToChoose.push_back(
+            hw1::Bumper(bumperMesh, center_position, VEC3_LIGHT_GRAY));
     }
 }
 
@@ -249,18 +267,34 @@ void hw1::Editor::DrawGrid() {
 void hw1::Editor::DrawChoosingBlocks() {
     glm::mat3 modelMatrix = glm::mat3(1);
 
+    std::string square_name = "spaceship_square";
+    std::string bumper_name = "bumper";
     // Go through every choosing object to render it.
-    for (auto& square : this->blocksToChoose) {
-        // Move the square to wanted position.
-        modelMatrix =
-            visMatrix * transform2D::Translate(square.GetPosition().x,
-                                               square.GetPosition().y);
+    for (auto& object : this->blocksToChoose) {
+        if (object.GetMesh()->GetMeshID() == square_name) {
+            // Move the square to wanted position.
+            modelMatrix =
+                visMatrix * transform2D::Translate(object.GetPosition().x,
+                                                   object.GetPosition().y);
 
-        // Render mesh.
-        RenderMesh2D(square.GetMesh(), shaders["VertexColor"], modelMatrix);
+            // Render mesh.
+            RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
 
-        // Reset modelMatrix.
-        modelMatrix = glm::mat3(1);
+            // Reset modelMatrix.
+            modelMatrix = glm::mat3(1);
+        }
+
+        else if (object.GetMesh()->GetMeshID() == bumper_name) {
+            // Move the bumper to wanted position.
+            modelMatrix =
+                visMatrix * transform2D::Translate(object.GetPosition().x,
+                                                   object.GetPosition().y);
+            // Render mesh.
+            RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
+
+            // Reset modelMatrix.
+            modelMatrix = glm::mat3(1);
+        }
     }
 }
 

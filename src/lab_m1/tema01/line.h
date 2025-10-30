@@ -18,7 +18,7 @@ class Line : public Object {
     /**
      * @brief Default constructor. Calls Object constructor.
      */
-    Line(Mesh* mesh, glm::vec3 color, glm::vec3 position, glm::vec3 end,
+    Line(Mesh* mesh, glm::vec3 color, glm::vec3 start, glm::vec3 end,
          bool active = true);
 
     float GetAngle() const { return angle; }

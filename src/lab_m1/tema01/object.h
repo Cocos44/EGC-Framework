@@ -12,6 +12,8 @@
 
 #include "core/gpu/mesh.h"
 
+#define BOTTOM_LEFT_CORNER glm::vec3(0, 0, 0)
+
 namespace hw1 {
 
 class Object {

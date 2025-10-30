@@ -21,7 +21,7 @@ namespace hw1 {
  *
  * @see Object
  */
-class Square : public hw1::Object {
+class Square : public Object {
    private:
     float length;
 
@@ -38,13 +38,11 @@ class Square : public hw1::Object {
 /**
  * @brief Creates a mesh that resembles a square.
  * @param name - Name of mesh.
- * @param leftBottomCorner - Specify where the left bottom corner needs to
- * be.
  * @param length - Length of a side.
  * @param color - Color of mesh.
  * @param fill - True if mesh should be filled with color, false otherwise.
  * @return Newly created mesh.
  */
-Mesh* CreateSquare(const std::string& name, glm::vec3 leftBottomCorner,
-                   float length, glm::vec3 color, bool fill = false);
+Mesh* CreateSquare(const std::string& name, float length, glm::vec3 color,
+                   bool fill = false);
 }  // namespace hw1

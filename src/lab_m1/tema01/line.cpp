@@ -9,10 +9,10 @@
 
 #include <cmath>
 
-hw1::Line::Line(Mesh* mesh, glm::vec3 color, glm::vec3 position, glm::vec3 end,
+hw1::Line::Line(Mesh* mesh, glm::vec3 color, glm::vec3 start, glm::vec3 end,
                 bool active)
-    : hw1::Object(mesh, position, color, active) {
-    this->start = position;
+    : hw1::Object(mesh, start, color, active) {
+    this->start = start;
     this->end = end;
     this->length = glm::distance(start, end);
     this->angle = atan2(end.y - start.y, end.x - start.x);
