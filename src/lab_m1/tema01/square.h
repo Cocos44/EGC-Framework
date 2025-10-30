@@ -15,7 +15,7 @@ namespace hw1 {
 
 /**
  * @class Square
- * @brief Represents a square.
+ * @brief Represents a square object.
  *
  * Inherits Object + contains side length.
  *

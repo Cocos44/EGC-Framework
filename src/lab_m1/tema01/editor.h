@@ -204,6 +204,16 @@ class Editor : public gfxc::SimpleScene {
     void OnMouseBtnRelease(int mouseX, int mouseY, int button,
                            int mods) override;
 
+    /**
+     * @brief Adds object to spaceship if grid square available.
+     *
+     * Checks if player releases left mouse button on grid square, checks if the
+     * grid square selected is available and if it is adds holding object to
+     * spaceship.
+     *
+     * @param mousePositionLogicSpace - Position of mouse in logic space
+     * coordinates.
+     */
     void PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace);
 
     /**
@@ -258,26 +268,43 @@ class Editor : public gfxc::SimpleScene {
 
     /**
      * @brief Gets the grid square from which mouse was released.
+     *
+     * @param mousePositionLogicSpace - Position of mouse in logic space
+     * coordinates.
+     *
+     * @return Center coordinates of square from inside grid, (-1, -1, 0) if not
+     * inside grid.
      */
-    glm::vec3 GetSquareFromGrid(const glm::vec3& mousePosition);
+    glm::vec3 GetSquareFromGrid(const glm::vec3& mousePositionLogicSpace);
 
     /**
      * @brief Converts screen coordinates (pixels) to logic space coordinates.
      *
      * @param mouseX - Mouse X position in pixels.
      * @param mouseY - Mouse Y position in pixels.
+     *
      * @return Position in logic space
      */
     glm::vec3 ConvertScreenToLogicSpace(int mouseX, int mouseY);
 
     /**
      * @brief Checks in which border the mouse was clicked.
+     *
+     * @param mousePositionLogicSpace - Position of mouse in logic space
+     * coordinates.
+     * @param border - Check if mouse inside this border.
+     *
+     * @return True if inside, false otherwise.
      */
-    bool IsInsideBorder(const glm::vec3& mousePosition,
+    bool IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
                         const BorderCorners& border) const;
 
     /**
      * @brief Checks if the grid square is used.
+     *
+     * @param position - Check if object has this position.
+     *
+     * @return True if inside, false otherwise.
      */
     bool InSpaceShip(const glm::vec3& position);
 

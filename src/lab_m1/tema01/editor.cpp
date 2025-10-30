@@ -16,6 +16,7 @@ hw1::Editor::Editor() {}
 hw1::Editor::~Editor() {}
 
 void hw1::Editor::Init() {
+    // Init camera options.
     auto camera = GetSceneCamera();
     camera->SetPosition(glm::vec3(0, 0, 50));
     camera->SetRotation(glm::vec3(0, 0, 0));
@@ -38,6 +39,7 @@ void hw1::Editor::Init() {
 void hw1::Editor::CreateEditorBorders() {
     Mesh* lineMesh = hw1::CreateLine("editor_line", VEC3_RED);
 
+    AddMeshToList(lineMesh);
     // Create grid border lines.
     {
         /**
@@ -48,6 +50,7 @@ void hw1::Editor::CreateEditorBorders() {
             glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 195, 0),
             glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 25, 0));
 
+        // Add every delimiter created.
         this->delimiters.push_back(Line(lineMesh, VEC3_RED,
                                         gridBlocksBorder.bottomLeft,
                                         gridBlocksBorder.topLeft));
@@ -61,6 +64,7 @@ void hw1::Editor::CreateEditorBorders() {
                                         gridBlocksBorder.bottomRight,
                                         gridBlocksBorder.bottomLeft));
 
+        // Add the border created.
         this->borders.push_back(gridBlocksBorder);
     }
 
@@ -73,6 +77,7 @@ void hw1::Editor::CreateEditorBorders() {
             "choosingBlocks", glm::vec3(140, 25, 0), glm::vec3(140, 195, 0),
             glm::vec3(1, 195, 0), glm::vec3(1, 25, 0));
 
+        // Add every delimiter created.
         this->delimiters.push_back(Line(lineMesh, VEC3_RED,
                                         choosingBlocksBorder.bottomLeft,
                                         choosingBlocksBorder.topLeft));
@@ -86,11 +91,15 @@ void hw1::Editor::CreateEditorBorders() {
                                         choosingBlocksBorder.bottomRight,
                                         choosingBlocksBorder.bottomLeft));
 
+        // Add the border created.
         this->borders.push_back(choosingBlocksBorder);
     }
 
     // Create border for every choose block.
     {
+        /**
+         * WARN: DO NOT CHANGE CORNER VALUES!
+         */
         BorderCorners choosingBlockSquare(
             "chooseSquare", glm::vec3(1, 25, 0), glm::vec3(1, 105, 0),
             glm::vec3(140, 105, 0), glm::vec3(140, 25, 0));
@@ -103,14 +112,18 @@ void hw1::Editor::CreateEditorBorders() {
                                         choosingBlockSquare.topRight,
                                         choosingBlockSquare.topLeft));
 
+        // Add the borders created.
         this->borders.push_back(choosingBlockSquare);
         this->borders.push_back(choosingBlockBumper);
     }
 }
 
 void hw1::Editor::CreateGrid() {
+    // Create mesh for a grid square.
     Mesh* squareMesh =
         hw1::CreateSquare("grid_square", GRID_SQUARE_LENGTH, VEC3_BLUE, true);
+
+    AddMeshToList(squareMesh);
     // When creating square we need to remember the center coordinate.
     for (int row = 0; row < GRID_ROW_NUMBER; row++) {
         for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
@@ -136,34 +149,54 @@ void hw1::Editor::CreateChoosingBlocks() {
         // Create new mesh for spaceship square.
         Mesh* squareMesh = hw1::CreateSquare(
             "spaceship_square", SPACESHIP_SQUARE_LENGTH, VEC3_LIGHT_GRAY, true);
+
+        // Add mesh to mesh list.
         AddMeshToList(squareMesh);
+
+        /**
+         * WARN: DO NOT CHANGE CORNER VALUES!
+         */
         glm::vec3 bottomLeft = glm::vec3(60, 50, 0);
+
+        // Compute center coordinate.
         glm::vec3 center_position =
             bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
                                    SPACESHIP_SQUARE_LENGTH / 2.0f, 0.0f);
 
+        // Add newly created square.
         this->blocksToChoose.push_back(hw1::Square(squareMesh, center_position,
                                                    VEC3_LIGHT_GRAY,
                                                    SPACESHIP_SQUARE_LENGTH));
     }
 
     {
+        // Create new mesh for a bumper.
         Mesh* bumperMesh =
             hw1::CreateBumper("spaceship_bumper", SPACESHIP_SQUARE_LENGTH,
                               VEC3_LIGHT_GRAY, VEC3_GREEN);
+
+        // Add mesh to mesh list.
         AddMeshToList(bumperMesh);
 
+        /**
+         * WARN: DO NOT CHANGE CORNER VALUES!
+         */
         glm::vec3 bottomLeft = glm::vec3(60, 120, 0);
+
+        // Compute center position.
         glm::vec3 center_position =
             bottomLeft + glm::vec3(SPACESHIP_SQUARE_LENGTH / 2.0f,
                                    SPACESHIP_SQUARE_LENGTH / 2.0f, 0.0f);
 
+        // Add newly created bumper.
         this->blocksToChoose.push_back(
             hw1::Bumper(bumperMesh, center_position, VEC3_LIGHT_GRAY));
     }
 }
 
 glm::mat3 hw1::Editor::GetSpaceConversionMatrix() {
+    // Calculate logic space conversion matrix.
+    // NOTE: Formula taken from second lab.
     float sx, sy, tx, ty;
 
     sx = this->viewSpace.width / this->logicSpace.width;
@@ -219,6 +252,7 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
     // Compute the 2D visualization matrix
     this->visMatrix = this->GetSpaceConversionMatrix();
 
+    // Draw current scene.
     DrawScene();
 }
 
@@ -234,24 +268,16 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
         for (auto& border : this->borders) {
             // Find in which border the mouse button was presesd.
             if (this->IsInsideBorder(mousePositionLogicSpace, border)) {
-                if (border.name == "chooseSquare") {
-                    this->buttonHoldObject = new Square(
-                        meshes["spaceship_square"], mousePositionLogicSpace,
-                        VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH);
-                }
-
-                else if (border.name == "chooseBumper") {
-                    this->buttonHoldObject =
-                        new Bumper(meshes["spaceship_bumper"],
-                                   mousePositionLogicSpace, VEC3_LIGHT_GRAY);
-                }
+                // Player chose square object.
                 if (border.name == "chooseSquare") {
                     this->isLeftButtonHold = true;
 
                     this->buttonHoldObject = new Square(
                         meshes["spaceship_square"], mousePositionLogicSpace,
                         VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH);
-                } else if (border.name == "chooseBumper") {
+                }
+                // Player chose bumper object.
+                else if (border.name == "chooseBumper") {
                     this->isLeftButtonHold = true;
 
                     this->buttonHoldObject = new Bumper(
@@ -262,7 +288,15 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
                 continue;
             }
         }
-    } else if (button == GLFW_MOUSE_BUTTON_3) {
+    }
+    // Right mouse button was clicked.
+    else if (button == GLFW_MOUSE_BUTTON_3) {
+        /**
+         * Delete spaceship part in that square grid.
+         * NOTE: GetSquareFromGrid returns (-1, -1, 0) if coordinates do not
+         * match any square grid => RemoveFromSpaceShip will not remove
+         * anything.
+         */
         this->RemoveFromSpaceship(
             this->GetSquareFromGrid(mousePositionLogicSpace));
     }
@@ -270,7 +304,10 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
 
 void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
                                     int mods) {
+    // Left mouse button was clicked.
     if (button == GLFW_MOUSE_BUTTON_2) {
+        // If player selected an object to be placed and matches it
+        // with a free square grid, add it to the spaceship.
         if (this->buttonHoldObject != nullptr) {
             // Convert mouse position to logic space
             glm::vec3 mousePositionLogicSpace =
@@ -327,8 +364,6 @@ void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
 
         // Update the object position
         this->buttonHoldObject->SetPosition(mousePositionLogicSpace);
-
-        // Build the model matrix using the updated position
     }
 }
 
@@ -452,6 +487,9 @@ void hw1::Editor::DrawScene() {
 }
 
 void hw1::Editor::RemoveFromSpaceship(const glm::vec3& position) {
+    // Go through every spaceship object and remove the first element that
+    // matches the position coordinates given as a parameter.
+    // NOTE: Due to checking, there will only be 1 match.
     for (auto it = spaceship.begin(); it != spaceship.end(); ++it) {
         if (it->GetPosition() == position) {
             spaceship.erase(it);
@@ -462,7 +500,9 @@ void hw1::Editor::RemoveFromSpaceship(const glm::vec3& position) {
 
 glm::vec3 hw1::Editor::GetSquareFromGrid(
     const glm::vec3& mousePositionLogicSpace) {
+    // Go through every grid square.
     for (const auto& square : this->grid) {
+        // Compute area of grid square.
         glm::vec3 bottomLeft =
             square.GetPosition() -
             glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
@@ -470,6 +510,7 @@ glm::vec3 hw1::Editor::GetSquareFromGrid(
             square.GetPosition() +
             glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
 
+        // Check if player released mouse button on this grid square.
         if (mousePositionLogicSpace.x >= bottomLeft.x &&
             mousePositionLogicSpace.x <= topRight.x &&
             mousePositionLogicSpace.y >= bottomLeft.y &&
@@ -478,10 +519,12 @@ glm::vec3 hw1::Editor::GetSquareFromGrid(
         }
     }
 
+    // If no match, return an invalid square position that will be checked.
     return glm::vec3(-1, -1, 0);
 }
 
 glm::vec3 hw1::Editor::ConvertScreenToLogicSpace(int mouseX, int mouseY) {
+    // Converts view space coordinates to logic space coordinates.
     int windowHeight = window->GetResolution().y;
     float flippedY = windowHeight - mouseY;
 
@@ -496,6 +539,7 @@ glm::vec3 hw1::Editor::ConvertScreenToLogicSpace(int mouseX, int mouseY) {
 
 bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
                                  const BorderCorners& border) const {
+    // Check if mouse position is inside a border.
     return (mousePositionLogicSpace.x >= border.bottomLeft.x) &&
            (mousePositionLogicSpace.y >= border.bottomLeft.y) &&
            (mousePositionLogicSpace.x <= border.topRight.x) &&
@@ -503,6 +547,7 @@ bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
 }
 
 bool hw1::Editor::InSpaceShip(const glm::vec3& position) {
+    // Check if an object is inside the spaceship based on it's coordinates.
     for (auto& object : this->spaceship)
         if (object.GetPosition() == position) return true;
 

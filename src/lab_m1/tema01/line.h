@@ -11,7 +11,11 @@
 namespace hw1 {
 
 /**
- * @brief Represents a line in 2D space.
+ * @class Line
+ *
+ * @brief Represents a line object. Inherits Object.
+ *
+ * @see Object
  */
 class Line : public Object {
    public:

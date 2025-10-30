@@ -3,6 +3,7 @@
  * @brief Implements all methods from Square class.
  * @author Grigoras Vlad Andrei
  */
+
 #include "lab_m1/tema01/square.h"
 
 hw1::Square::Square(Mesh* mesh, glm::vec3 position, glm::vec3 color,
@@ -25,7 +26,7 @@ Mesh* hw1::CreateSquare(const std::string& name, float length, glm::vec3 color,
     if (!fill) {
         square->SetDrawMode(GL_LINE_LOOP);
     } else {
-        // Draw 2 triangles. Add the remaining 2 indices
+        // Draw 2 triangles. Add the remaining 2 indices.
         indices.push_back(0);
         indices.push_back(2);
     }
