@@ -11,6 +11,8 @@
 
 #include "lab_m1/tema01/editor.h"
 
+#include <iostream>
+
 hw1::Editor::Editor() {}
 
 hw1::Editor::~Editor() {}
@@ -34,6 +36,7 @@ void hw1::Editor::Init() {
     this->CreateEditorBorders();
     this->CreateGrid();
     this->CreateChoosingBlocks();
+    this->CreateComponentsCounter();
 }
 
 void hw1::Editor::CreateEditorBorders() {
@@ -141,6 +144,28 @@ void hw1::Editor::CreateGrid() {
             this->grid.push_back(hw1::Square(squareMesh, center_position,
                                              VEC3_GREEN, GRID_SQUARE_LENGTH));
         }
+    }
+}
+
+void hw1::Editor::CreateComponentsCounter() {
+    // Create mesh for counter section.
+    Mesh* squareMesh = hw1::CreateSquare(
+        "counter_square", COUNTER_SQUARE_LENGTH, VEC3_GREEN, true);
+
+    AddMeshToList(squareMesh);
+
+    for (int i = 0; i < COUNTER_NUMBER; i++) {
+        glm::vec3 bottomLeftSquare =
+            COUNTER_TOP_LEFT + (float)i * COUNTER_HORIZONTAL_OFFSET;
+
+        // Compute center position.
+        glm::vec3 center_position =
+            bottomLeftSquare + glm::vec3(COUNTER_SQUARE_LENGTH / 2.0f,
+                                         COUNTER_SQUARE_LENGTH / 2.0f, 0.0f);
+
+        // Add newly created square to grid.
+        this->componentsCounter.push_back(hw1::Square(
+            squareMesh, center_position, VEC3_GREEN, GRID_SQUARE_LENGTH));
     }
 }
 
@@ -268,6 +293,7 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
         for (auto& border : this->borders) {
             // Find in which border the mouse button was presesd.
             if (this->IsInsideBorder(mousePositionLogicSpace, border)) {
+                if (this->spaceship.size() == SPACESHIP_MAX_COMPONENTS) return;
                 // Player chose square object.
                 if (border.name == "chooseSquare") {
                     this->isLeftButtonHold = true;
@@ -378,7 +404,7 @@ void hw1::Editor::DrawBorders() {
         // the arctangent calculated in constructor, then scale to the size
         // wanted.
         modelMatrix =
-            visMatrix *
+            this->visMatrix *
             transform2D::Translate(line.GetPosition().x, line.GetPosition().y) *
             transform2D::Rotate(line.GetAngle()) *
             transform2D::Scale(line.GetLength(), 1);
@@ -404,8 +430,8 @@ void hw1::Editor::DrawGrid() {
     for (auto& square : this->grid) {
         // Move the square to wanted position.
         modelMatrix =
-            visMatrix * transform2D::Translate(square.GetPosition().x,
-                                               square.GetPosition().y);
+            this->visMatrix * transform2D::Translate(square.GetPosition().x,
+                                                     square.GetPosition().y);
 
         // Render mesh.
         RenderMesh2D(square.GetMesh(), shaders["VertexColor"], modelMatrix);
@@ -423,9 +449,9 @@ void hw1::Editor::DrawChoosingBlocks() {
         std::string meshID = object.GetMesh()->GetMeshID();
         if (meshID == "spaceship_square") {
             // Move the square to wanted position.
-            modelMatrix =
-                visMatrix * transform2D::Translate(object.GetPosition().x,
-                                                   object.GetPosition().y);
+            modelMatrix = this->visMatrix *
+                          transform2D::Translate(object.GetPosition().x,
+                                                 object.GetPosition().y);
 
             // Render mesh.
             RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
@@ -436,9 +462,9 @@ void hw1::Editor::DrawChoosingBlocks() {
 
         else if (meshID == "spaceship_bumper") {
             // Move the bumper to wanted position.
-            modelMatrix =
-                visMatrix * transform2D::Translate(object.GetPosition().x,
-                                                   object.GetPosition().y);
+            modelMatrix = this->visMatrix *
+                          transform2D::Translate(object.GetPosition().x,
+                                                 object.GetPosition().y);
             // Render mesh.
             RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
 
@@ -452,9 +478,10 @@ void hw1::Editor::DrawHoldObject() {
     // Render the mesh
     if (this->isLeftButtonHold && (this->buttonHoldObject != nullptr)) {
         glm::mat3 modelMatrix = glm::mat3(1);
-        modelMatrix = visMatrix * transform2D::Translate(
-                                      this->buttonHoldObject->GetPosition().x,
-                                      this->buttonHoldObject->GetPosition().y);
+        modelMatrix =
+            this->visMatrix *
+            transform2D::Translate(this->buttonHoldObject->GetPosition().x,
+                                   this->buttonHoldObject->GetPosition().y);
         RenderMesh2D(this->buttonHoldObject->GetMesh(), shaders["VertexColor"],
                      modelMatrix);
     }
@@ -467,8 +494,8 @@ void hw1::Editor::DrawSpaceShip() {
     for (auto& object : this->spaceship) {
         // Move the square to wanted position.
         modelMatrix =
-            visMatrix * transform2D::Translate(object.GetPosition().x,
-                                               object.GetPosition().y);
+            this->visMatrix * transform2D::Translate(object.GetPosition().x,
+                                                     object.GetPosition().y);
 
         // Render mesh.
         RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
@@ -478,12 +505,31 @@ void hw1::Editor::DrawSpaceShip() {
     }
 }
 
+void hw1::Editor::DrawCounterSection() {
+    glm::mat3 modelMatrix = glm::mat3(1);
+
+    for (int i = 0; i < COUNTER_NUMBER - this->spaceship.size(); i++) {
+        // Move the square to wanted position.
+        modelMatrix =
+            this->visMatrix *
+            transform2D::Translate(this->componentsCounter[i].GetPosition().x,
+                                   this->componentsCounter[i].GetPosition().y);
+
+        // Render mesh.
+        RenderMesh2D(this->componentsCounter[i].GetMesh(),
+                     shaders["VertexColor"], modelMatrix);
+
+        // Reset modelMatrix.
+        modelMatrix = glm::mat3(1);
+    }
+}
 void hw1::Editor::DrawScene() {
     this->DrawChoosingBlocks();
     this->DrawSpaceShip();
     this->DrawHoldObject();
     this->DrawBorders();
     this->DrawGrid();
+    this->DrawCounterSection();
 }
 
 void hw1::Editor::RemoveFromSpaceship(const glm::vec3& position) {

@@ -18,17 +18,23 @@
 
 #define LOGIC_SPACE_HEIGHT 500
 #define LOGIC_SPACE_WIDTH 500
+
 #define BOTTOM_LEFT_CORNER glm::vec3(0, 0, 0)
 
 #define GRID_SQUARE_LENGTH 12
 #define GRID_ROW_NUMBER 15
 #define GRID_COLUMN_NUMBER 9
-
-#define SPACESHIP_SQUARE_LENGTH 18
-
 #define GRID_TOP_LEFT glm::vec3(205, 176, 0)
 #define GRID_HORIZONTAL_OFFSET glm::vec3(18, 0, 0)
 #define GRID_VERTICAL_OFFSET glm::vec3(0, 18, 0)
+
+#define SPACESHIP_SQUARE_LENGTH 18
+#define SPACESHIP_MAX_COMPONENTS 10
+
+#define COUNTER_NUMBER SPACESHIP_MAX_COMPONENTS
+#define COUNTER_SQUARE_LENGTH 20
+#define COUNTER_HORIZONTAL_OFFSET glm::vec3(27, 0, 0)
+#define COUNTER_TOP_LEFT glm::vec3(210, 205, 0)
 
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
@@ -138,6 +144,14 @@ class Editor : public gfxc::SimpleScene {
      * square grid.
      */
     void CreateGrid();
+
+    /**
+     * @brief Creates component counter section.
+     *
+     * Loads 10 simple squares into memory and prints number of components left
+     * that player can place in spaceship.
+     */
+    void CreateComponentsCounter();
 
     /**
      * @brief Creates lines that will separate features.
@@ -257,6 +271,10 @@ class Editor : public gfxc::SimpleScene {
     void DrawSpaceShip();
 
     /**
+     * @brief Draws counter section by number of components left for spaceship.
+     */
+    void DrawCounterSection();
+    /**
      * @brief Draws scene in current frame.
      */
     void DrawScene();
@@ -310,6 +328,7 @@ class Editor : public gfxc::SimpleScene {
 
    protected:
     std::vector<Square> grid;
+    std::vector<Square> componentsCounter;
     std::vector<Object> blocksToChoose;
 
     std::vector<Line> delimiters;

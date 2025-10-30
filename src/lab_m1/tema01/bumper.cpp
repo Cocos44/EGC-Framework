@@ -26,7 +26,7 @@ Mesh* hw1::CreateBumper(std::string name, float squareLength,
     std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
 
     int segments = 100;
-    float radius = 1.5f * squareLength;
+    float radius = 1.0f * squareLength;
     glm::vec3 center = glm::vec3(0, squareLength / 2, 0);
 
     int startIndex = vertices.size();
@@ -34,7 +34,7 @@ Mesh* hw1::CreateBumper(std::string name, float squareLength,
 
     for (int i = 0; i <= segments; i++) {
         float angle = M_PI * i / segments;
-        float x = center.x + radius * cos(angle);
+        float x = center.x + radius * cos(angle) * 1.5f;
         float y = center.y + radius * sin(angle);
         vertices.push_back(VertexFormat(glm::vec3(x, y, 0), semicircleColor));
     }
