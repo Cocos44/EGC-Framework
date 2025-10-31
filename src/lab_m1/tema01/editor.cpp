@@ -571,7 +571,12 @@ void hw1::Editor::DrawStartButton() {
                   transform2D::Translate(this->startButton->GetPosition().x,
                                          this->startButton->GetPosition().y);
 
-    this->startButton->SetColor(VEC3_RED);
+    // Render button color depending on spaceship config.
+    if (this->IsSpaceShipConfig())
+        this->startButton->SetColor(VEC3_GREEN);
+    else
+        this->startButton->SetColor(VEC3_RED);
+
     // Render mesh.
     RenderMesh2D(this->startButton->GetMesh(), shaders["VertexColor"],
                  modelMatrix);
@@ -682,4 +687,94 @@ void hw1::Editor::ChangeGridMatrixPositionValue(const glm::vec3& position,
             return;
         }
     }
+}
+
+bool hw1::Editor::IsBFSNodeValid(
+    bool visitedMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER], int row,
+    int column) {
+    // Check grid bounds
+    if (row < 0 || column < 0 || row >= GRID_ROW_NUMBER ||
+        column >= GRID_COLUMN_NUMBER)
+        return false;
+
+    // Must be filled and not already visited
+    if (!this->gridMatrix[row][column] || visitedMatrix[row][column])
+        return false;
+
+    return true;
+}
+
+bool hw1::Editor::IsSpaceShipConnected() {
+    // Get first non false element in matrix.
+    int row = -1;
+    int column = -1;
+    bool found = false;
+
+    bool visitedMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER];
+
+    for (int i = 0; i < GRID_ROW_NUMBER; i++) {
+        for (int j = 0; j < GRID_COLUMN_NUMBER; j++) {
+            visitedMatrix[i][j] = false;
+
+            if (!found && this->gridMatrix[i][j] == true) {
+                row = i;
+                column = j;
+
+                found = true;
+            }
+        }
+    }
+
+    /**
+     *No elements found, so spaceship is connected.
+
+     * NOTE: Returns true but config not correct (spaceship does not have a
+     * component). IsSpaceShipConfig picks it up.
+     *
+     * @see IsSpaceShipConfig.
+     */
+    if (row == -1 || column == -1) return true;
+
+    // Used to check every adjacent node in matrix.
+    int directionRow[] = {-1, 0, 1, 0};
+    int directionColumn[] = {0, 1, 0, -1};
+
+    std::queue<std::pair<int, int>> q;
+
+    q.push({row, column});
+    visitedMatrix[row][column] = true;
+
+    // Perform BFS search from found node.
+    while (!q.empty()) {
+        std::pair<int, int> node = q.front();
+
+        int nodeX = node.first;
+        int nodeY = node.second;
+
+        q.pop();
+
+        for (int i = 0; i < 4; i++) {
+            int adjacentX = nodeX + directionRow[i];
+            int adjacentY = nodeY + directionColumn[i];
+
+            // If node inside matrix && not visited => add to queue.
+            if (this->IsBFSNodeValid(visitedMatrix, adjacentX, adjacentY)) {
+                q.push({adjacentX, adjacentY});
+                visitedMatrix[adjacentX][adjacentY] = true;
+            }
+        }
+    }
+
+    for (int i = 0; i < GRID_ROW_NUMBER; i++)
+        for (int j = 0; j < GRID_COLUMN_NUMBER; j++)
+            if (visitedMatrix[i][j] != this->gridMatrix[i][j]) return false;
+
+    return true;
+}
+
+bool hw1::Editor::IsSpaceShipConfig() {
+    if (!this->spaceship.size()) return false;
+    if (!this->IsSpaceShipConnected()) return false;
+
+    return true;
 }

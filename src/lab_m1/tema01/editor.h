@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <queue>
 #include <string>
+#include <utility>
 
 #include "components/simple_scene.h"
 #include "components/text_renderer.h"
@@ -356,6 +358,39 @@ class Editor : public gfxc::SimpleScene {
      */
     void ChangeGridMatrixPositionValue(const glm::vec3& position,
                                        const bool& value);
+
+    /**
+     * @brief Checks if adjacent node can be added to BFS search.
+     *
+     * Checks if row and column are inside matrix boundaries, if
+     * visitedMatrix[row][column] is already visited and if
+     * gridMatrix[row][column] contains a valid node.
+     *
+     * @param visitedMatrix - All visited nodes in BFS search.
+     * @param row - Row that contains node to check.
+     * @param column - Column that contains node to check.
+     *
+     * @return True if node can be added to BFS search, false otherwise.
+     */
+    bool IsBFSNodeValid(bool visitedMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER],
+                        int row, int column);
+    /**
+     * @brief Checks is spaceship is connected.
+     *
+     * Performs a BFS on the grid matrix starting from the first non false
+     * value found in grid matrix. If visited matrix is equal to the grid
+     * matrix, then the spaceship is connected.
+     *
+     * @return True if spaceship is connected, false otherwise.
+     */
+    bool IsSpaceShipConnected();
+    /**
+     * @brief Returns true if spaceship configuration is valid. If valid,
+     * game can start.
+     *
+     * @return Spaceship config corectness.
+     */
+    bool IsSpaceShipConfig();
 
    protected:
     std::vector<Square> grid;
