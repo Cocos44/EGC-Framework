@@ -24,8 +24,8 @@
 #define BOTTOM_LEFT_CORNER glm::vec3(0, 0, 0)
 
 #define GRID_SQUARE_LENGTH 12
-#define GRID_ROW_NUMBER 15
-#define GRID_COLUMN_NUMBER 9
+#define GRID_ROW_NUMBER 9
+#define GRID_COLUMN_NUMBER 15
 #define GRID_TOP_LEFT glm::vec3(205, 176, 0)
 #define GRID_HORIZONTAL_OFFSET glm::vec3(18, 0, 0)
 #define GRID_VERTICAL_OFFSET glm::vec3(0, 18, 0)
@@ -348,6 +348,15 @@ class Editor : public gfxc::SimpleScene {
      */
     bool InSpaceShip(const glm::vec3& position);
 
+    /**
+     * @brief Based on position given, add or remove object position to grid
+     * matrix.
+     *
+     * @param position - Position of mesh in logic space coordinates.
+     */
+    void ChangeGridMatrixPositionValue(const glm::vec3& position,
+                                       const bool& value);
+
    protected:
     std::vector<Square> grid;
     std::vector<Square> componentsCounter;
@@ -367,6 +376,8 @@ class Editor : public gfxc::SimpleScene {
 
     LogicSpace logicSpace;
     ViewSpace viewSpace;
+
+    bool gridMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER];
 
     glm::mat3 visMatrix;
 };

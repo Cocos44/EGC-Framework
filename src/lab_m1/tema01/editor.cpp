@@ -33,6 +33,10 @@ void hw1::Editor::Init() {
     this->buttonHoldObject = nullptr;
     this->startButton = nullptr;
 
+    for (int row = 0; row < GRID_ROW_NUMBER; row++)
+        for (int column = 0; column < GRID_COLUMN_NUMBER; column++)
+            this->gridMatrix[row][column] = false;
+
     // Load text font.
     this->textRenderer.Load(
         "/home/vlad/Dev/EGC/EGC-Framework/assets/fonts/Hack-Bold.ttf", 40);
@@ -55,8 +59,8 @@ void hw1::Editor::CreateEditorBorders() {
          */
         BorderCorners gridBlocksBorder(
             "gridBlocks", glm::vec3(193, 25, 0), glm::vec3(193, 195, 0),
-            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 195, 0),
-            glm::vec3(193 + 18 * (GRID_ROW_NUMBER + 1), 25, 0));
+            glm::vec3(193 + 18 * (GRID_COLUMN_NUMBER + 1), 195, 0),
+            glm::vec3(193 + 18 * (GRID_COLUMN_NUMBER + 1), 25, 0));
 
         // Add every delimiter created.
         this->delimiters.push_back(Line(lineMesh, VEC3_RED,
@@ -136,9 +140,9 @@ void hw1::Editor::CreateGrid() {
     for (int row = 0; row < GRID_ROW_NUMBER; row++) {
         for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
             // Compute bottom left corner.
-            glm::vec3 bottomLeftSquare = GRID_TOP_LEFT +
-                                         (float)row * GRID_HORIZONTAL_OFFSET -
-                                         (float)column * GRID_VERTICAL_OFFSET;
+            glm::vec3 bottomLeftSquare =
+                GRID_TOP_LEFT + (float)column * GRID_HORIZONTAL_OFFSET -
+                (float)row * GRID_VERTICAL_OFFSET;
 
             // Compute center position.
             glm::vec3 center_position =
@@ -340,11 +344,16 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
         /**
          * Delete spaceship part in that square grid.
          * NOTE: GetSquareFromGrid returns (-1, -1, 0) if coordinates do not
-         * match any square grid => RemoveFromSpaceShip will not remove
-         * anything.
+         * match any square grid => RemoveFromSpaceShip +
+         * ChangeGridMatrixPositionValue will not remove anything.
          */
-        this->RemoveFromSpaceship(
-            this->GetSquareFromGrid(mousePositionLogicSpace));
+        glm::vec3 squarePosition =
+            this->GetSquareFromGrid(mousePositionLogicSpace);
+
+        this->RemoveFromSpaceship(this->GetSquareFromGrid(squarePosition));
+
+        this->ChangeGridMatrixPositionValue(
+            this->GetSquareFromGrid(squarePosition), false);
     }
 }
 
@@ -382,6 +391,8 @@ void hw1::Editor::PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace) {
                 !this->InSpaceShip(resultCoordinate)) {
                 std::string meshID =
                     this->buttonHoldObject->GetMesh()->GetMeshID();
+
+                this->ChangeGridMatrixPositionValue(resultCoordinate, true);
 
                 if (meshID == "spaceship_square") {
                     // Add new square to spaceship vector.
@@ -638,9 +649,37 @@ bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
 }
 
 bool hw1::Editor::InSpaceShip(const glm::vec3& position) {
-    // Check if an object is inside the spaceship based on it's coordinates.
-    for (auto& object : this->spaceship)
-        if (object.GetPosition() == position) return true;
+    // Go through every grid square.
+    for (int i = 0; i < this->grid.size(); i++) {
+        if (this->grid[i].GetPosition() == position) {
+            int row = i / GRID_COLUMN_NUMBER;
+            int column = i % GRID_COLUMN_NUMBER;
+
+            // Find grid square and check if there is a spaceship object there.
+            if ((this->grid[i].GetPosition() == position) &&
+                (this->gridMatrix[row][column]))
+                return true;
+        }
+    }
 
     return false;
+}
+
+void hw1::Editor::ChangeGridMatrixPositionValue(const glm::vec3& position,
+                                                const bool& value) {
+    if (position == glm::vec3(-1, -1, 0)) return;
+
+    // Find position in matrix and either add or delete a value.
+    // NOTE: this->gridMatrix[i][j] == false -> No object placed there.
+    // NOTE: this->gridMatrix[i][j] == true -> An object placed there.
+    for (int i = 0; i < this->grid.size(); i++) {
+        if (this->grid[i].GetPosition() == position) {
+            int row = i / GRID_COLUMN_NUMBER;
+            int column = i % GRID_COLUMN_NUMBER;
+
+            this->gridMatrix[row][column] = value;
+
+            return;
+        }
+    }
 }
