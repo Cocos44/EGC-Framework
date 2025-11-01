@@ -26,9 +26,6 @@ void hw1::Editor::InitGame() {
 
     this->isGameRunning = true;
     this->PlaceSpaceShipStartPosition();
-
-    std::cout << "NUMBER OF COMPONENTS: " << this->spaceship->components.size()
-              << "\n";
 }
 
 void hw1::Editor::PlaceSpaceShipStartPosition() {

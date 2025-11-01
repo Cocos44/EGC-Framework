@@ -15,8 +15,14 @@
 
 #define SPACESHIP_ROW_NUMBER 9
 #define SPACESHIP_COLUMN_NUMBER 15
+#define SPACESHIP_SQUARE_LENGTH 18
+
+#define SPACESHIP_LEFT_MAX 1.0f
+#define SPACESHIP_RIGHT_MAX 499.0f
 
 namespace hw1 {
+
+enum class DIRECTION { LEFT, RIGHT, UP, DOWN };
 
 /**
  * @class SpaceShip
@@ -59,6 +65,26 @@ class SpaceShip {
      * it in the lower middle part of the screen for the game.
      */
     void CalculateCenterPosition();
+
+    /**
+     * @brief Checks if spaceship can be moved.
+     *
+     * Calculates future position and checks if it is out of bounds.
+     *
+     * @return True if there is space left on the left / right, false otherwise.
+     */
+    bool CanMoveSpaceship(float moveOffset, DIRECTION direction);
+
+    /**
+     * @brief Move spaceship.
+     *
+     * First it checks if spaceship can be moved, then if true moves.
+     *
+     * @param moveOffset - Amount to move spaceship by.
+     * @param direction - Direction to move spaceship to.
+     */
+    void MoveSpaceship(float moveOffset, DIRECTION direction);
+
     /**
      * @brief Checks if the grid square is used.
      *
@@ -111,7 +137,9 @@ class SpaceShip {
 
     bool positionMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER];
 
+    glm::vec3 lowestPosition;
     glm::vec3 centerPosition;
+    glm::vec3 highestPosition;
 
     int numberOfComponents;
 };

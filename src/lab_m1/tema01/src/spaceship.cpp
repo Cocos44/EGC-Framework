@@ -23,7 +23,9 @@ hw1::SpaceShip::SpaceShip() {
         for (int column = 0; column < SPACESHIP_COLUMN_NUMBER; column++)
             this->positionMatrix[row][column] = false;
 
+    this->lowestPosition = glm::vec3(600, 600, 0);
     this->centerPosition = glm::vec3(0, 0, 0);
+    this->highestPosition = glm::vec3(0, 0, 0);
 }
 
 void hw1::SpaceShip::AddObject(Object object, const glm::vec2& matrixPosition) {
@@ -60,15 +62,67 @@ void hw1::SpaceShip::RemoveObject(const glm::vec3& position,
 }
 
 void hw1::SpaceShip::CalculateCenterPosition() {
-    glm::vec3 lowestPosition = glm::vec3(600, 600, 0);
-    glm::vec3 highestPosition = glm::vec3(0, 0, 0);
+    this->lowestPosition = glm::vec3(600, 600, 0);
+    this->highestPosition = glm::vec3(0, 0, 0);
+
+    for (const auto& object : components) {
+        this->lowestPosition =
+            glm::min(this->lowestPosition, object.GetPosition());
+        this->highestPosition =
+            glm::max(this->highestPosition, object.GetPosition());
+    }
+
+    this->centerPosition =
+        (this->lowestPosition + this->highestPosition) / 2.0f;
 
     for (auto& object : this->components) {
-        lowestPosition = glm::min(lowestPosition, object.GetPosition());
-        highestPosition = glm::max(highestPosition, object.GetPosition());
+        this->lowestPosition =
+            glm::min(this->lowestPosition, object.GetPosition());
+        this->highestPosition =
+            glm::max(this->highestPosition, object.GetPosition());
     }
 
     this->centerPosition = (lowestPosition + highestPosition) / 2.0f;
+}
+
+bool hw1::SpaceShip::CanMoveSpaceship(float moveOffset, DIRECTION direction) {
+    this->CalculateCenterPosition();
+
+    // Calculate future position.
+    // NOTE: Tried with actual position (if actual position out of bounds then
+    // add / subtract from position so that it stopped being out of bounds), but
+    // didn't work.
+    float futureLowestX = this->lowestPosition.x;
+    float futureHighestX = this->highestPosition.x;
+
+    if (direction == DIRECTION::LEFT)
+        futureLowestX -= moveOffset;
+    else if (direction == DIRECTION::RIGHT)
+        futureHighestX += moveOffset;
+
+    if (futureLowestX - (float)SPACESHIP_SQUARE_LENGTH / 2 < SPACESHIP_LEFT_MAX)
+        return false;
+    if (futureHighestX + (float)SPACESHIP_SQUARE_LENGTH / 2 >
+        SPACESHIP_RIGHT_MAX)
+        return false;
+
+    return true;
+}
+
+void hw1::SpaceShip::MoveSpaceship(float moveOffset, DIRECTION direction) {
+    if (!this->CanMoveSpaceship(moveOffset, direction)) return;
+
+    for (auto& object : this->components) {
+        if (direction == DIRECTION::LEFT) {
+            object.SetPosition(object.GetPosition() -
+                               glm::vec3(moveOffset, 0, 0));
+        } else if (direction == DIRECTION::RIGHT) {
+            object.SetPosition(object.GetPosition() +
+                               glm::vec3(moveOffset, 0, 0));
+        }
+    }
+
+    this->CalculateCenterPosition();
 }
 
 bool hw1::SpaceShip::InSpaceShip(const glm::vec3& position) {

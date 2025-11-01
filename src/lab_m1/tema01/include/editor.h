@@ -44,7 +44,8 @@
 #define START_BUTTON_LENGTH 25
 #define START_BUTTON_POSITION glm::vec3(455, 235, 0)
 
-#define GAME_STARTING_POSITION glm::vec3(250, 40, 0)
+#define GAME_STARTING_POSITION glm::vec3(250, 28, 0)
+#define GAME_PALLET_SPEED 110.0f
 
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
@@ -221,6 +222,15 @@ class Editor : public gfxc::SimpleScene {
      * @param button - Button clicked.
      * @param mods - Modifiers (not used).
      */
+
+    /**
+     * @brief Handles key hold inputs.
+     *
+     * @param deltaTimeSeconds - Time passed since previous frame.
+     * @param mods - Modifiers (not used).
+     */
+    void OnInputUpdate(float deltaTime, int mods) override;
+
     void OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) override;
 
     /**

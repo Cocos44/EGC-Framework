@@ -13,6 +13,8 @@
 
 #include "lab_m1/tema01/include/editor.h"
 
+#include <iostream>
+
 #include "lab_m1/tema01/include/spaceship.h"
 
 hw1::Editor::Editor()
@@ -111,6 +113,17 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 
     // Draw current scene.
     DrawScene();
+}
+
+void hw1::Editor::OnInputUpdate(float deltaTime, int mods) {
+    if (this->isGameRunning) {
+        float moveOffset = GAME_PALLET_SPEED * deltaTime;
+        if (window->KeyHold(GLFW_KEY_LEFT)) {
+            this->spaceship->MoveSpaceship(moveOffset, DIRECTION::LEFT);
+        } else if (window->KeyHold(GLFW_KEY_RIGHT)) {
+            this->spaceship->MoveSpaceship(moveOffset, DIRECTION::RIGHT);
+        }
+    }
 }
 
 void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
