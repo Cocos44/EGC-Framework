@@ -38,10 +38,6 @@ void hw1::Editor::Init() {
     this->startButton = nullptr;
     this->isGameRunning = false;
 
-    for (int row = 0; row < GRID_ROW_NUMBER; row++)
-        for (int column = 0; column < GRID_COLUMN_NUMBER; column++)
-            this->gridMatrix[row][column] = false;
-
     // Load text font.
     this->textRenderer.Load(
         "/home/vlad/Dev/EGC/EGC-Framework/assets/fonts/Hack-Bold.ttf", 40);
@@ -149,7 +145,7 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
                         VEC3_LIGHT_GRAY, true);
                 } else if (border.name == "startButton" &&
                            this->spaceship->IsConfigCorrect()) {
-                    this->isGameRunning = true;
+                    this->InitGame();
                 }
             } else {
                 continue;
@@ -160,9 +156,8 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
     else if (button == GLFW_MOUSE_BUTTON_3) {
         /**
          * Delete spaceship part in that square grid.
-         * NOTE: GetSquareFromGrid returns (-1, -1, 0) if coordinates do not
-         * match any square grid => RemoveFromSpaceShip +
-         * ChangeGridMatrixPositionValue will not remove anything.
+         * NOTE: GetSquareFromGrid returns glm::vec3(-1, -1, 0) if not found.
+         * GetPositionFromGrid checks value of squarePosition before operating.
          */
         glm::vec3 squarePosition =
             this->GetSquareFromGrid(mousePositionLogicSpace);
@@ -183,7 +178,7 @@ void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
             glm::vec3 mousePositionLogicSpace =
                 this->ConvertScreenToLogicSpace(mouseX, mouseY);
 
-            this->PlaceObjectInGrid(mousePositionLogicSpace);
+            this->PlaceObjectInSpaceShip(mousePositionLogicSpace);
 
             // Clean up dragged object
             delete this->buttonHoldObject;
@@ -206,7 +201,8 @@ void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
 
 void hw1::Editor::FrameEnd() {}
 
-void hw1::Editor::PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace) {
+void hw1::Editor::PlaceObjectInSpaceShip(
+    const glm::vec3& mousePositionLogicSpace) {
     for (const auto& border : this->borders) {
         if (border.name == "gridBlocks" &&
             this->IsInsideBorder(mousePositionLogicSpace, border)) {
@@ -252,6 +248,7 @@ void hw1::Editor::DrawScene() {
         this->DrawText();
         this->DrawStartButton();
     } else {
+        this->DrawSpaceShip();
     }
 }
 

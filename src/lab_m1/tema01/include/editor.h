@@ -256,7 +256,7 @@ class Editor : public gfxc::SimpleScene {
      * @param mousePositionLogicSpace - Position of mouse in logic space
      * coordinates.
      */
-    void PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace);
+    void PlaceObjectInSpaceShip(const glm::vec3& mousePositionLogicSpace);
 
     /**
      * @brief Draws all lines that define all borders in current frame.
@@ -339,6 +339,11 @@ class Editor : public gfxc::SimpleScene {
     bool IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
                         const BorderCorners& border) const;
 
+    /**
+     * @brief Clears all editor objects and initializes all game fields.
+     */
+    void InitGame();
+
    protected:
     // ==================================================
 
@@ -354,8 +359,6 @@ class Editor : public gfxc::SimpleScene {
 
     bool isLeftButtonHold;
     Object* buttonHoldObject;
-
-    bool gridMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER];
     // EDITOR OBJECTS.
 
     // ==================================================

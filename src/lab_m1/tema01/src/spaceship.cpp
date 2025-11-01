@@ -13,7 +13,8 @@
 
 #include "lab_m1/tema01/include/spaceship.h"
 
-#include "lab_m1/tema01/include/editor.h"
+#include <queue>
+#include <utility>
 
 hw1::SpaceShip::SpaceShip() {
     this->numberOfComponents = 0;
@@ -23,8 +24,7 @@ hw1::SpaceShip::SpaceShip() {
             this->positionMatrix[row][column] = false;
 }
 
-void hw1::SpaceShip::AddObject(const Object& object,
-                               const glm::vec2& matrixPosition) {
+void hw1::SpaceShip::AddObject(Object object, const glm::vec2& matrixPosition) {
     this->components.push_back(object);
 
     this->positionMatrix[(int)matrixPosition.x][(int)matrixPosition.y] = true;
@@ -37,12 +37,16 @@ void hw1::SpaceShip::RemoveObject(const glm::vec3& position,
     // Go through every spaceship object and remove the first element that
     // matches the position coordinates given as a parameter.
     // NOTE: Due to checking, there will only be 1 match.
+
+    if (position == glm::vec3(-1, -1, 0)) return;
+
     for (auto it = this->components.begin(); it != this->components.end();
          ++it) {
         if (it->GetPosition() == position) {
             this->components.erase(it);
             this->positionMatrix[(int)matrixPosition.x][(int)matrixPosition.y] =
                 false;
+            this->numberOfComponents--;
             return;
         }
     }
@@ -59,8 +63,8 @@ bool hw1::SpaceShip::IsBFSNodeValid(
     bool visitedMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER], int row,
     int column) {
     // Check grid bounds
-    if (row < 0 || column < 0 || row >= GRID_ROW_NUMBER ||
-        column >= GRID_COLUMN_NUMBER)
+    if (row < 0 || column < 0 || row >= SPACESHIP_ROW_NUMBER ||
+        column >= SPACESHIP_COLUMN_NUMBER)
         return false;
 
     // Must be filled and not already visited
@@ -76,10 +80,10 @@ bool hw1::SpaceShip::IsSpaceShipConnected() {
     int column = -1;
     bool found = false;
 
-    bool visitedMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER];
+    bool visitedMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER];
 
-    for (int i = 0; i < GRID_ROW_NUMBER; i++) {
-        for (int j = 0; j < GRID_COLUMN_NUMBER; j++) {
+    for (int i = 0; i < SPACESHIP_ROW_NUMBER; i++) {
+        for (int j = 0; j < SPACESHIP_COLUMN_NUMBER; j++) {
             visitedMatrix[i][j] = false;
 
             if (!found && this->positionMatrix[i][j] == true) {
@@ -131,8 +135,8 @@ bool hw1::SpaceShip::IsSpaceShipConnected() {
         }
     }
 
-    for (int i = 0; i < GRID_ROW_NUMBER; i++)
-        for (int j = 0; j < GRID_COLUMN_NUMBER; j++)
+    for (int i = 0; i < SPACESHIP_ROW_NUMBER; i++)
+        for (int j = 0; j < SPACESHIP_COLUMN_NUMBER; j++)
             if (visitedMatrix[i][j] != this->positionMatrix[i][j]) return false;
 
     return true;

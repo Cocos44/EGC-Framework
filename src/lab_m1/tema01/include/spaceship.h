@@ -38,7 +38,7 @@ class SpaceShip {
      * @param object - Object to add.
      * @param matrixPosition - Position in matrix.
      */
-    void AddObject(const Object& object, const glm::vec2& matrixPosition);
+    void AddObject(Object object, const glm::vec2& matrixPosition);
 
     /**
      * @brief Removes spaceship component.
@@ -49,9 +49,21 @@ class SpaceShip {
     void RemoveObject(const glm::vec3& position,
                       const glm::vec2& matrixPosition);
 
-   private:
+    /**
+     * @return Returns number of components.
+     */
     int GetNumberOfComponents() const { return this->numberOfComponents; }
 
+    /**
+     * @brief Checks if the grid square is used.
+     *
+     * @param position - Check if object has this position.
+     *
+     * @return True if inside, false otherwise.
+     */
+    bool InSpaceShip(const glm::vec3& position);
+
+   private:
     /**
      * @brief Checks if adjacent node can be added to BFS search.
      *
@@ -79,15 +91,6 @@ class SpaceShip {
      * @return True if spaceship is connected, false otherwise.
      */
     bool IsSpaceShipConnected();
-
-    /**
-     * @brief Checks if the grid square is used.
-     *
-     * @param position - Check if object has this position.
-     *
-     * @return True if inside, false otherwise.
-     */
-    bool InSpaceShip(const glm::vec3& position);
 
    public:
     /**
