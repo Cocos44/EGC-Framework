@@ -11,6 +11,66 @@
 
 #include "lab_m1/tema01/include/editor.h"
 
+void hw1::Editor::PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace) {
+    for (const auto& border : this->borders) {
+        if (border.name == "gridBlocks" &&
+            this->IsInsideBorder(mousePositionLogicSpace, border)) {
+            glm::vec3 resultCoordinate =
+                this->GetSquareFromGrid(mousePositionLogicSpace);
+
+            // If the mouse is over a valid grid square and object is not
+            // already there.
+            if (resultCoordinate.x >= 0 && resultCoordinate.y >= 0 &&
+                !this->InSpaceShip(resultCoordinate)) {
+                std::string meshID =
+                    this->buttonHoldObject->GetMesh()->GetMeshID();
+
+                this->ChangeGridMatrixPositionValue(resultCoordinate, true);
+
+                if (meshID == "spaceship_square") {
+                    // Add new square to spaceship vector.
+                    this->spaceship.push_back(
+                        Square(meshes["spaceship_square"], resultCoordinate,
+                               VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH));
+                } else if (meshID == "spaceship_bumper") {
+                    // Add new bumper to spaceship vector.
+                    this->spaceship.push_back(Bumper(meshes["spaceship_bumper"],
+                                                     resultCoordinate,
+                                                     VEC3_LIGHT_GRAY));
+                }
+            }
+
+            // No need to check further objects.
+            break;
+        }
+    }
+}
+
+glm::vec3 hw1::Editor::GetSquareFromGrid(
+    const glm::vec3& mousePositionLogicSpace) {
+    // Go through every grid square.
+    for (const auto& square : this->grid) {
+        // Compute area of grid square.
+        glm::vec3 bottomLeft =
+            square.GetPosition() -
+            glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
+        glm::vec3 topRight =
+            square.GetPosition() +
+            glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
+
+        // Check if player released mouse button on this grid square.
+        if (mousePositionLogicSpace.x >= bottomLeft.x &&
+            mousePositionLogicSpace.x <= topRight.x &&
+            mousePositionLogicSpace.y >= bottomLeft.y &&
+            mousePositionLogicSpace.y <= topRight.y) {
+            return square.GetPosition();
+        }
+    }
+
+    // If no match, return an invalid square position that will be checked.
+    return glm::vec3(-1, -1, 0);
+}
+
 bool hw1::Editor::InSpaceShip(const glm::vec3& position) {
     // Go through every grid square.
     for (int i = 0; i < this->grid.size(); i++) {

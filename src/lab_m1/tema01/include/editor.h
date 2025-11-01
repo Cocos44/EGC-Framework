@@ -393,28 +393,41 @@ class Editor : public gfxc::SimpleScene {
     bool IsSpaceShipConfig();
 
    protected:
+    // ==================================================
+
+    // EDITOR OBJECTS.
     std::vector<Square> grid;
     std::vector<Square> componentsCounter;
     std::vector<Object> blocksToChoose;
 
     StartButton* startButton;
 
-    gfxc::TextRenderer textRenderer;
-
     std::vector<Line> delimiters;
     std::vector<BorderCorners> borders;
-
-    std::vector<Object> spaceship;
 
     bool isLeftButtonHold;
     Object* buttonHoldObject;
 
+    bool gridMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER];
+    // EDITOR OBJECTS.
+
+    // ==================================================
+
+    // EDITOR + GAME OBJECTS.
+    std::vector<Object> spaceship;
+
     LogicSpace logicSpace;
     ViewSpace viewSpace;
 
-    bool gridMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER];
+    gfxc::TextRenderer textRenderer;
 
     glm::mat3 visMatrix;
+    // EDITOR + GAME OBJECTS.
+
+    // ==================================================
+
+    // GAME OBJECTS
+    bool isGameRunning;
 };
 
 }  // namespace hw1

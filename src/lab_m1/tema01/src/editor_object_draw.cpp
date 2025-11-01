@@ -165,14 +165,3 @@ void hw1::Editor::DrawStartButton() {
     RenderMesh2D(this->startButton->GetMesh(), shaders["VertexColor"],
                  modelMatrix);
 }
-
-void hw1::Editor::DrawScene() {
-    this->DrawChoosingBlocks();
-    this->DrawSpaceShip();
-    this->DrawHoldObject();
-    this->DrawBorders();
-    this->DrawGrid();
-    this->DrawCounterSection();
-    this->DrawText();
-    this->DrawStartButton();
-}
