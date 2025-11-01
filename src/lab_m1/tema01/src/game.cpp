@@ -36,3 +36,19 @@ void hw1::Editor::PlaceSpaceShipStartPosition() {
         object.SetPosition(object.GetPosition() - offsetToStart);
     }
 }
+
+void hw1::Editor::UpdateBallPosition(float deltaTimeSeconds) {
+    // Check ball orientation and based on it either add / subtract.
+    glm::vec3 nextPositionOffset = glm::vec3(0, 0, 0);
+    nextPositionOffset.x = this->gameBall->xAxisOrientation
+                               ? 100 * deltaTimeSeconds
+                               : -100 * deltaTimeSeconds;
+    nextPositionOffset.y = this->gameBall->yAxisOrientation
+                               ? 100 * deltaTimeSeconds
+                               : -100 * deltaTimeSeconds;
+
+    glm::vec3 updatedPosition =
+        this->gameBall->GetPosition() + nextPositionOffset;
+
+    this->gameBall->SetPosition(updatedPosition);
+}

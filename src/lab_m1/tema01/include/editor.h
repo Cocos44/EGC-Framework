@@ -49,7 +49,8 @@
 
 #define GAME_STARTING_POSITION glm::vec3(250, 28, 0)
 #define GAME_BRICKS_STARTING_POSITION glm::vec3(0.5f, 230, 0)
-#define GAME_PALLET_SPEED 110.0f
+#define GAME_PALLET_SPEED 130.0f
+#define GAME_BALL_SPEED 110.0f
 #define GAME_BRICK_LENGTH 41.2
 #define GAME_BRICK_WIDTH 22
 #define GAME_ROW_NUMBER 5
@@ -343,12 +344,14 @@ class Editor : public gfxc::SimpleScene {
 
     /**
      * @brief Draws game ball.
+     *
+     * @param deltaTimeSeconds - Time passed since previous frame.
      */
-    void DrawGameBall();
+    void DrawGameBall(float deltaTimeSeconds);
     /**
      * @brief Draws scene in current frame.
      */
-    void DrawScene();
+    void DrawScene(float deltaTimeSeconds);
 
     /**
      * @brief Gets the grid square from which mouse was released.
@@ -384,6 +387,13 @@ class Editor : public gfxc::SimpleScene {
      */
     bool IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
                         const BorderCorners& border) const;
+
+    /**
+     * @brief Changes ball position every frame.
+     *
+     * @param deltaTimeSeconds - Time passed since previous frame.
+     */
+    void UpdateBallPosition(float deltaTimeSeconds);
 
     /**
      * @brief Clears all editor objects and initializes all game fields.

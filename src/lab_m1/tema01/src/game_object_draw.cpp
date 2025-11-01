@@ -33,8 +33,10 @@ void hw1::Editor::DrawGameBricks() {
     }
 }
 
-void hw1::Editor::DrawGameBall() {
+void hw1::Editor::DrawGameBall(float deltaTimeSeconds) {
     if (this->hasGameStarted) {
+        this->UpdateBallPosition(deltaTimeSeconds);
+
         glm::mat3 modelMatrix = glm::mat3(1);
         modelMatrix = this->visMatrix *
                       transform2D::Translate(this->gameBall->GetPosition().x,

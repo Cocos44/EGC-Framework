@@ -124,7 +124,7 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
     this->visMatrix = this->GetSpaceConversionMatrix();
 
     // Draw current scene.
-    DrawScene();
+    DrawScene(deltaTimeSeconds);
 }
 
 void hw1::Editor::OnInputUpdate(float deltaTime, int mods) {
@@ -264,7 +264,7 @@ void hw1::Editor::PlaceObjectInSpaceShip(
     }
 }
 
-void hw1::Editor::DrawScene() {
+void hw1::Editor::DrawScene(float deltaTimeSeconds) {
     if (!this->isGameRunning) {
         this->DrawChoosingBlocks();
         this->DrawSpaceShip();
@@ -278,7 +278,7 @@ void hw1::Editor::DrawScene() {
         this->DrawSpaceShip();
         this->DrawGameBricks();
         this->DrawText();
-        this->DrawGameBall();
+        this->DrawGameBall(deltaTimeSeconds);
     }
 }
 
