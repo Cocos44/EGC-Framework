@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "lab_m1/tema01/object.h"
+#include "lab_m1/tema01/include/object.h"
 
 namespace hw1 {
 

@@ -4,7 +4,7 @@
  * @author Grigoras Vlad Andrei
  */
 
-#include "lab_m1/tema01/bumper.h"
+#include "lab_m1/tema01/include/bumper.h"
 
 hw1::Bumper::Bumper(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                     bool active)

@@ -6,7 +6,7 @@
  * @author Grigoras Vlad Andrei
  */
 
-#include "lab_m1/tema01/startbutton.h"
+#include "lab_m1/tema01/include/startbutton.h"
 
 hw1::StartButton::StartButton(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                               float leftSideLength, bool active)

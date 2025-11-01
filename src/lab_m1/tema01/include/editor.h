@@ -13,12 +13,12 @@
 
 #include "components/simple_scene.h"
 #include "components/text_renderer.h"
-#include "lab_m1/tema01/bumper.h"
-#include "lab_m1/tema01/line.h"
-#include "lab_m1/tema01/object.h"
-#include "lab_m1/tema01/square.h"
-#include "lab_m1/tema01/startbutton.h"
-#include "lab_m1/tema01/transform2D.h"
+#include "lab_m1/tema01/include/bumper.h"
+#include "lab_m1/tema01/include/line.h"
+#include "lab_m1/tema01/include/object.h"
+#include "lab_m1/tema01/include/square.h"
+#include "lab_m1/tema01/include/startbutton.h"
+#include "lab_m1/tema01/utils/transform2D.h"
 
 #define LOGIC_SPACE_HEIGHT 500
 #define LOGIC_SPACE_WIDTH 500
@@ -41,7 +41,7 @@
 #define COUNTER_TOP_LEFT glm::vec3(210, 205, 0)
 
 #define START_BUTTON_LENGTH 25
-#define START_BUTTON_POSITION glm::vec3(455, 245, 0)
+#define START_BUTTON_POSITION glm::vec3(455, 235, 0)
 
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)

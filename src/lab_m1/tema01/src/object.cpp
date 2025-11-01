@@ -5,7 +5,7 @@
  * @see object2D.h
  */
 
-#include "object.h"
+#include "lab_m1/tema01/include/object.h"
 
 hw1::Object::Object(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                     bool active)

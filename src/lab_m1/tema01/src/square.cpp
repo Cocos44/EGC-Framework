@@ -4,7 +4,7 @@
  * @author Grigoras Vlad Andrei
  */
 
-#include "lab_m1/tema01/square.h"
+#include "lab_m1/tema01/include/square.h"
 
 hw1::Square::Square(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                     float length, bool active)

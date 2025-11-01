@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 
     // Create a window property structure
     WindowProperties wp;
-    wp.resolution = glm::ivec2(1280, 720);
+    wp.resolution = glm::ivec2(1920, 1080);
     wp.vSync = true;
     wp.selfDir = GetParentDir(std::string(argv[0]));
 

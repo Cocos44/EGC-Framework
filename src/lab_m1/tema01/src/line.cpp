@@ -5,7 +5,7 @@
  * @author Grigoras Vlad Andrei
  */
 
-#include "lab_m1/tema01/line.h"
+#include "lab_m1/tema01/include/line.h"
 
 #include <cmath>
 
