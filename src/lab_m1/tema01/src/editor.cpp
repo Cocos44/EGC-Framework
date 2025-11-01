@@ -136,6 +136,7 @@ void hw1::Editor::OnInputUpdate(float deltaTime, int mods) {
             this->spaceship->MoveSpaceship(moveOffset, DIRECTION::RIGHT);
         } else if (window->KeyHold(GLFW_KEY_SPACE) && this->isGameRunning) {
             this->hasGameStarted = true;
+            this->PlaceBallStartingPosition();
         }
     }
 }

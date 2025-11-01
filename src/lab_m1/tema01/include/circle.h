@@ -27,11 +27,7 @@ class Circle : public Object {
    private:
     float radius;
 
-    float xSpeed;
-    float ySpeed;
-
-    bool xAxisOrientation;
-    bool yAxisOrientation;
+    glm::vec2 velocity;
 
    public:
     /**
@@ -42,6 +38,17 @@ class Circle : public Object {
            bool active = true);
 
     float GetRadius() const { return this->radius; }
+    glm::vec2 GetVelocity() const { return this->velocity; }
+    float GetXSpeed() const { return this->velocity.x; }
+    float GetYSpeed() const { return this->velocity.y; }
+
+    void SetXSpeed(const float& xSpeed) { this->velocity.x = xSpeed; }
+    void SetYSpeed(const float& ySpeed) { this->velocity.x = ySpeed; }
+    void SetVelocity(const glm::vec2& velocity) { this->velocity = velocity; }
+    void SetVelocity(float xSpeed, float ySpeed) {
+        this->velocity.x = xSpeed;
+        this->velocity.y = ySpeed;
+    }
 };
 
 /**

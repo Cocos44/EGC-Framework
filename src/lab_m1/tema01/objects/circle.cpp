@@ -14,10 +14,7 @@ hw1::Circle::Circle(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                     float radius, bool active)
     : Object(mesh, position, color, active),
       radius(radius),
-      xSpeed(0),
-      ySpeed(0),
-      xAxisOrientation(false),
-      yAxisOrientation(true) {
+      velocity(glm::vec2(0, 0)) {
     this->collisionBox.min =
         glm::vec3(position.x - radius, position.y - radius, 0);
 
