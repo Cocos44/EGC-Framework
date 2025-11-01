@@ -22,6 +22,27 @@ class Object {
     struct AABB {
         glm::vec3 min;
         glm::vec3 max;
+
+        enum class CollisionAxis { NONE, X, Y };
+
+        CollisionAxis CheckCollision(const AABB& other) {
+            bool isCollisionX =
+                this->max.x >= other.min.x && other.max.x >= this->min.x;
+            bool isCollisionY =
+                this->max.y >= other.min.y && other.max.y >= this->min.y;
+
+            if (isCollisionX && isCollisionY) {
+                float overlapX = std::min(this->max.x - other.min.x,
+                                          other.max.x - this->min.x);
+                float overlapY = std::min(this->max.y - other.min.y,
+                                          other.max.y - this->min.y);
+
+                return (overlapX < overlapY) ? CollisionAxis::X
+                                             : CollisionAxis::Y;
+            }
+
+            return CollisionAxis::NONE;
+        }
     };
 
    public:

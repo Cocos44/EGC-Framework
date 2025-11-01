@@ -1,7 +1,9 @@
 /**
- * @file object_create.cpp
+ * @file draw_object_create.cpp
  *
  * @brief Implements mesh and object drawing methods of Editor class.
+ *
+ * Only draws objects related to the editor.
  *
  * @see Editor
  *

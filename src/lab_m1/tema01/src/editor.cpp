@@ -13,10 +13,6 @@
 
 #include "lab_m1/tema01/include/editor.h"
 
-#include <iostream>
-
-#include "lab_m1/tema01/include/spaceship.h"
-
 hw1::Editor::Editor()
     : textRenderer("/home/vlad/Dev/EGC/EGC-Framework",
                    window->GetResolution().x, window->GetResolution().y) {}
@@ -49,11 +45,21 @@ void hw1::Editor::Init() {
 
     this->spaceship = new SpaceShip();
 
+    // Get a different seed every time.
+    srand(time(nullptr));
+
+    // ============================
+    // EDITOR OBJECT CREATION
     this->CreateEditorBorders();
     this->CreateGrid();
     this->CreateChoosingBlocks();
     this->CreateComponentsCounter();
     this->CreateStartButton();
+    // EDITOR OBJECT CREATION
+    // ============================
+    // GAME OBJECT CREATION
+    this->CreateGameBricks();
+    // ============================
 }
 
 glm::mat3 hw1::Editor::GetSpaceConversionMatrix() {
@@ -267,6 +273,7 @@ void hw1::Editor::DrawScene() {
         this->DrawStartButton();
     } else {
         this->DrawSpaceShip();
+        this->DrawGameBricks();
         this->DrawText();
     }
 }

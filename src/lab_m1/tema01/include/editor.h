@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cstdlib>
+#include <ctime>
 #include <queue>
 #include <string>
 #include <utility>
@@ -16,6 +18,7 @@
 #include "lab_m1/tema01/include/bumper.h"
 #include "lab_m1/tema01/include/line.h"
 #include "lab_m1/tema01/include/object.h"
+#include "lab_m1/tema01/include/rectangle.h"
 #include "lab_m1/tema01/include/spaceship.h"
 #include "lab_m1/tema01/include/square.h"
 #include "lab_m1/tema01/include/startbutton.h"
@@ -44,12 +47,21 @@
 #define START_BUTTON_POSITION glm::vec3(455, 235, 0)
 
 #define GAME_STARTING_POSITION glm::vec3(250, 28, 0)
+#define GAME_BRICKS_STARTING_POSITION glm::vec3(0.5f, 230, 0)
 #define GAME_PALLET_SPEED 110.0f
+#define GAME_BRICK_LENGTH 41.2
+#define GAME_BRICK_WIDTH 22
+#define GAME_ROW_NUMBER 5
+#define GAME_COLUMN_NUMBER 12
+#define GAME_HORIZONTAL_OFFSET glm::vec3(41.6f, 0, 0)
+#define GAME_VERTICAL_OFFSET glm::vec3(0, 22.3f, 0)
 
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
 #define VEC3_BLUE glm::vec3(0, 0, 1)
+#define VEC3_PURPLE glm::vec3(0.50f, 0, 0.50f)
 #define VEC3_LIGHT_GRAY glm::vec3(0.75f, 0.75f, 0.75f)
+#define VEC3_BROWN glm::vec3(0.588f, 0.294f, 0.16f)
 
 /**
  * @namespace hw1
@@ -183,6 +195,14 @@ class Editor : public gfxc::SimpleScene {
     void CreateStartButton();
 
     /**
+     * @brief Creates bricks to destroy in game.
+     *
+     * Loads a simple rectangle mesh into GPU memory and uses it to render a 5 x
+     * 12 rectangle grid.
+     */
+    void CreateGameBricks();
+
+    /**
      * @brief Get matrix conversion for translating logic space to view space.
      * @return Conversion matrix.
      */
@@ -311,6 +331,11 @@ class Editor : public gfxc::SimpleScene {
     void DrawStartButton();
 
     /**
+     * @brief Draws game bricks.
+     */
+    void DrawGameBricks();
+
+    /**
      * @brief Draws scene in current frame.
      */
     void DrawScene();
@@ -395,6 +420,10 @@ class Editor : public gfxc::SimpleScene {
     // GAME OBJECTS
     bool isGameRunning;
     bool hasGameStarted;
+
+    std::vector<glm::vec3> colors = {VEC3_RED, VEC3_GREEN, VEC3_BLUE,
+                                     VEC3_PURPLE, VEC3_BROWN};
+    std::vector<Rectangle> bricks;
 
     int gameScore;
     int numberOfLives;

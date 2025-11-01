@@ -1,7 +1,9 @@
 /**
- * @file object_create.cpp
+ * @file file_object_create.cpp
  *
  * @brief Implements mesh and object creation methods of Editor class.
+ *
+ * File contains methods only related to editor objects.
  *
  * @see Editor
  *
@@ -117,15 +119,15 @@ void hw1::Editor::CreateGrid() {
     // When creating square we need to remember the center coordinate.
     for (int row = 0; row < GRID_ROW_NUMBER; row++) {
         for (int column = 0; column < GRID_COLUMN_NUMBER; column++) {
-            // Compute bottom left corner.
-            glm::vec3 bottomLeftSquare =
-                GRID_TOP_LEFT + (float)column * GRID_HORIZONTAL_OFFSET -
-                (float)row * GRID_VERTICAL_OFFSET;
+            // Compute top left corner.
+            glm::vec3 topLeftSquare = GRID_TOP_LEFT +
+                                      (float)column * GRID_HORIZONTAL_OFFSET -
+                                      (float)row * GRID_VERTICAL_OFFSET;
 
             // Compute center position.
             glm::vec3 center_position =
-                bottomLeftSquare + glm::vec3(GRID_SQUARE_LENGTH / 2.0f,
-                                             GRID_SQUARE_LENGTH / 2.0f, 0.0f);
+                topLeftSquare + glm::vec3(GRID_SQUARE_LENGTH / 2.0f,
+                                          GRID_SQUARE_LENGTH / 2.0f, 0.0f);
 
             // Add newly created square to grid.
             this->grid.push_back(hw1::Square(squareMesh, center_position,
