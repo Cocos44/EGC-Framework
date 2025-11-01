@@ -246,14 +246,14 @@ void hw1::Editor::PlaceObjectInSpaceShip(
                 if (meshID == "spaceship_square") {
                     // Add new square to spaceship vector.
                     this->spaceship->AddObject(
-                        Square(meshes["spaceship_square"], resultCoordinate,
-                               VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH),
+                        new Square(meshes["spaceship_square"], resultCoordinate,
+                                   VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH),
                         this->GetPositionFromGrid(resultCoordinate));
                 } else if (meshID == "spaceship_bumper") {
                     // Add new bumper to spaceship vector.
                     this->spaceship->AddObject(
-                        Bumper(meshes["spaceship_bumper"], resultCoordinate,
-                               VEC3_LIGHT_GRAY),
+                        new Bumper(meshes["spaceship_bumper"], resultCoordinate,
+                                   VEC3_LIGHT_GRAY),
                         this->GetPositionFromGrid(resultCoordinate));
                 }
             }

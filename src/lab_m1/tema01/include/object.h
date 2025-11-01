@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "core/gpu/mesh.h"
 #include "glm/fwd.hpp"
 
@@ -18,6 +20,9 @@
 namespace hw1 {
 
 class Object {
+    friend class Editor;
+    friend class SpaceShip;
+
    private:
     struct AABB {
         glm::vec3 min;
@@ -51,9 +56,15 @@ class Object {
      */
     Object(Mesh* mesh, glm::vec3 position, glm::vec3 color, bool active = true);
 
+    virtual ~Object() {}
+
    private:
     Mesh* mesh;
+
+   protected:
     glm::vec3 position;
+
+   private:
     glm::vec3 color;
     bool active;
 
@@ -70,7 +81,10 @@ class Object {
     AABB getCollisionBox() const { return this->collisionBox; }
 
     void SetMesh(Mesh* mesh) { this->mesh = mesh; }
-    void SetPosition(const glm::vec3& position) { this->position = position; }
+
+    virtual void SetPosition(const glm::vec3& position) {
+        this->position = position;
+    }
 
     /**
      * @brief Changes color for every vertex and loads new data in GPU.

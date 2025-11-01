@@ -33,6 +33,8 @@ class Square : public Object {
     Square(Mesh* mesh, glm::vec3 position, glm::vec3 color, float length,
            bool active = true);
 
+    void SetPosition(const glm::vec3& position);
+
     float GetLength() const { return this->length; }
 };
 

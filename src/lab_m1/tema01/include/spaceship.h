@@ -44,7 +44,7 @@ class SpaceShip {
      * @param object - Object to add.
      * @param matrixPosition - Position in matrix.
      */
-    void AddObject(Object object, const glm::vec2& matrixPosition);
+    void AddObject(Object* object, const glm::vec2& matrixPosition);
 
     /**
      * @brief Removes spaceship component.
@@ -135,7 +135,7 @@ class SpaceShip {
     bool IsConfigCorrect();
 
    private:
-    std::vector<Object> components;
+    std::vector<Object*> components;
 
     bool positionMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER];
 

@@ -16,6 +16,15 @@ hw1::Square::Square(Mesh* mesh, glm::vec3 position, glm::vec3 color,
         glm::vec3(position.x + length / 2, position.y + length / 2, 0);
 }
 
+void hw1::Square::SetPosition(const glm::vec3& position) {
+    this->position = position;
+
+    this->collisionBox.min =
+        position - glm::vec3(this->length / 2, this->length / 2, 0);
+    this->collisionBox.max =
+        position + glm::vec3(this->length / 2, this->length / 2, 0);
+}
+
 Mesh* hw1::CreateSquare(const std::string& name, float length, glm::vec3 color,
                         bool fill) {
     glm::vec3 offset = glm::vec3(-length / 2.0f, -length / 2.0f, 0);

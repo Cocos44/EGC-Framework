@@ -32,6 +32,8 @@ class StartButton : public Object {
                 bool active = true);
 
     float GetLeftSideLength() const { return this->leftSideLength; }
+
+    void SetPosition(const glm::vec3& position) { this->position = position; }
 };
 
 /**

@@ -10,6 +10,8 @@
  * @author Grigoras Vlad Andrei
  */
 
+#include <iostream>
+
 #include "lab_m1/tema01/include/editor.h"
 
 void hw1::Editor::CreateGameBricks() {
@@ -44,15 +46,15 @@ void hw1::Editor::CreateGameBricks() {
 }
 
 void hw1::Editor::CreateGameBall() {
-    Mesh* gameBall = hw1::CreateCircle(
-        "game_ball", (float)SPACESHIP_SQUARE_LENGTH / 2, VEC3_LIGHT_GRAY, true);
+    Mesh* gameBall =
+        hw1::CreateCircle("game_ball", (float)SPACESHIP_SQUARE_LENGTH / 2 - 2,
+                          VEC3_LIGHT_GRAY, true);
 
     AddMeshToList(gameBall);
 
     // Compute center coordinate.
-    glm::vec3 center_position =
-        GAME_STARTING_POSITION + glm::vec3(0, SPACESHIP_SQUARE_LENGTH, 0);
+    glm::vec3 center_position = GAME_BALL_STARTING_POSITION;
 
     this->gameBall = new hw1::Circle(gameBall, center_position, VEC3_LIGHT_GRAY,
-                                     START_BUTTON_LENGTH);
+                                     (float)SPACESHIP_SQUARE_LENGTH / 2 - 2);
 }

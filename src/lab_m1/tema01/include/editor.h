@@ -48,10 +48,11 @@
 #define START_BUTTON_POSITION glm::vec3(455, 235, 0)
 
 #define GAME_STARTING_POSITION glm::vec3(250, 28, 0)
+#define GAME_BALL_STARTING_POSITION glm::vec3(250, 50, 0)
 #define GAME_BRICKS_STARTING_POSITION glm::vec3(0.5f, 230, 0)
 #define GAME_PALLET_SPEED 130.0f
 #define GAME_BALL_SPEED 110.0f
-#define GAME_BRICK_LENGTH 41.2
+#define GAME_BRICK_LENGTH 38
 #define GAME_BRICK_WIDTH 22
 #define GAME_ROW_NUMBER 5
 #define GAME_COLUMN_NUMBER 12
@@ -404,6 +405,23 @@ class Editor : public gfxc::SimpleScene {
      * @brief Moves spaceship to starting position.
      */
     void PlaceSpaceShipStartPosition();
+
+    /**
+     * @brief Places ball at starting position.
+     */
+    void PlaceBallStartingPosition();
+
+    /**
+     * @brief Finds element in vector and deletes it.
+     *
+     * @param position - Object to delete
+     */
+    void RemoveBrick(const glm::vec3& position);
+
+    /**
+     * @brief Check if ball is colliding with an object.
+     */
+    void CheckCollision(float deltaTimeSeconds);
 
    protected:
     // ==================================================

@@ -28,7 +28,8 @@ hw1::SpaceShip::SpaceShip() {
     this->highestPosition = glm::vec3(0, 0, 0);
 }
 
-void hw1::SpaceShip::AddObject(Object object, const glm::vec2& matrixPosition) {
+void hw1::SpaceShip::AddObject(Object* object,
+                               const glm::vec2& matrixPosition) {
     this->components.push_back(object);
 
     this->positionMatrix[(int)matrixPosition.x][(int)matrixPosition.y] = true;
@@ -48,7 +49,7 @@ void hw1::SpaceShip::RemoveObject(const glm::vec3& position,
 
     for (auto it = this->components.begin(); it != this->components.end();
          ++it) {
-        if (it->GetPosition() == position) {
+        if ((*it)->GetPosition() == position) {
             this->components.erase(it);
             this->positionMatrix[(int)matrixPosition.x][(int)matrixPosition.y] =
                 false;
@@ -67,9 +68,9 @@ void hw1::SpaceShip::CalculateCenterPosition() {
 
     for (const auto& object : components) {
         this->lowestPosition =
-            glm::min(this->lowestPosition, object.GetPosition());
+            glm::min(this->lowestPosition, object->GetPosition());
         this->highestPosition =
-            glm::max(this->highestPosition, object.GetPosition());
+            glm::max(this->highestPosition, object->GetPosition());
     }
 
     this->centerPosition =
@@ -77,9 +78,9 @@ void hw1::SpaceShip::CalculateCenterPosition() {
 
     for (auto& object : this->components) {
         this->lowestPosition =
-            glm::min(this->lowestPosition, object.GetPosition());
+            glm::min(this->lowestPosition, object->GetPosition());
         this->highestPosition =
-            glm::max(this->highestPosition, object.GetPosition());
+            glm::max(this->highestPosition, object->GetPosition());
     }
 
     this->centerPosition = (lowestPosition + highestPosition) / 2.0f;
@@ -112,22 +113,19 @@ bool hw1::SpaceShip::CanMoveSpaceship(float moveOffset, DIRECTION direction) {
 void hw1::SpaceShip::MoveSpaceship(float moveOffset, DIRECTION direction) {
     if (!this->CanMoveSpaceship(moveOffset, direction)) return;
 
-    for (auto& object : this->components) {
-        if (direction == DIRECTION::LEFT) {
-            object.SetPosition(object.GetPosition() -
-                               glm::vec3(moveOffset, 0, 0));
-        } else if (direction == DIRECTION::RIGHT) {
-            object.SetPosition(object.GetPosition() +
-                               glm::vec3(moveOffset, 0, 0));
-        }
-    }
+    glm::vec3 offset = (direction == DIRECTION::LEFT)
+                           ? glm::vec3(-moveOffset, 0, 0)
+                           : glm::vec3(moveOffset, 0, 0);
+    for (auto& object : this->components)
+        // Move object
+        object->SetPosition(object->GetPosition() + offset);
 
     this->CalculateCenterPosition();
 }
 
 bool hw1::SpaceShip::InSpaceShip(const glm::vec3& position) {
     for (auto& object : this->components)
-        if (object.GetPosition() == position) return true;
+        if (object->GetPosition() == position) return true;
 
     return false;
 }

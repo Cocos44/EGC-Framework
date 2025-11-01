@@ -8,19 +8,21 @@
 
 #include "lab_m1/tema01/include/circle.h"
 
+#include "glm/common.hpp"
+
 hw1::Circle::Circle(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                     float radius, bool active)
     : Object(mesh, position, color, active),
       radius(radius),
       xSpeed(0),
       ySpeed(0),
-      xAxisOrientation(true),
+      xAxisOrientation(false),
       yAxisOrientation(true) {
     this->collisionBox.min =
-        glm::vec3(position.x - radius / 2, position.y - radius / 2, 0);
+        glm::vec3(position.x - radius, position.y - radius, 0);
 
     this->collisionBox.max =
-        glm::vec3(position.x + radius / 2, position.y + radius / 2, 0);
+        glm::vec3(position.x + radius, position.y + radius, 0);
 }
 
 Mesh* hw1::CreateCircle(const std::string& name, float radius, glm::vec3 color,

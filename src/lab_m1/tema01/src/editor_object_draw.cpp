@@ -111,11 +111,11 @@ void hw1::Editor::DrawSpaceShip() {
     for (auto& object : this->spaceship->components) {
         // Move the square to wanted position.
         modelMatrix =
-            this->visMatrix * transform2D::Translate(object.GetPosition().x,
-                                                     object.GetPosition().y);
+            this->visMatrix * transform2D::Translate(object->GetPosition().x,
+                                                     object->GetPosition().y);
 
         // Render mesh.
-        RenderMesh2D(object.GetMesh(), shaders["VertexColor"], modelMatrix);
+        RenderMesh2D(object->GetMesh(), shaders["VertexColor"], modelMatrix);
 
         // Reset modelMatrix.
         modelMatrix = glm::mat3(1);
