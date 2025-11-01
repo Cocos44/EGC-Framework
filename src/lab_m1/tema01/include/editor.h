@@ -33,7 +33,6 @@
 #define GRID_HORIZONTAL_OFFSET glm::vec3(18, 0, 0)
 #define GRID_VERTICAL_OFFSET glm::vec3(0, 18, 0)
 
-#define SPACESHIP_SQUARE_LENGTH 18
 #define SPACESHIP_MAX_COMPONENTS 10
 
 #define COUNTER_NUMBER SPACESHIP_MAX_COMPONENTS
@@ -395,6 +394,10 @@ class Editor : public gfxc::SimpleScene {
 
     // GAME OBJECTS
     bool isGameRunning;
+    bool hasGameStarted;
+
+    int gameScore;
+    int numberOfLives;
     // GAME OBJECTS
 };
 

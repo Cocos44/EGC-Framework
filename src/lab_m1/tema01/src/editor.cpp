@@ -40,6 +40,9 @@ void hw1::Editor::Init() {
     this->startButton = nullptr;
     this->isGameRunning = false;
 
+    this->gameScore = 0;
+    this->numberOfLives = 3;
+
     // Load text font.
     this->textRenderer.Load(
         "/home/vlad/Dev/EGC/EGC-Framework/assets/fonts/Hack-Bold.ttf", 40);
@@ -118,10 +121,12 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 void hw1::Editor::OnInputUpdate(float deltaTime, int mods) {
     if (this->isGameRunning) {
         float moveOffset = GAME_PALLET_SPEED * deltaTime;
-        if (window->KeyHold(GLFW_KEY_LEFT)) {
+        if (window->KeyHold(GLFW_KEY_LEFT) && this->hasGameStarted) {
             this->spaceship->MoveSpaceship(moveOffset, DIRECTION::LEFT);
-        } else if (window->KeyHold(GLFW_KEY_RIGHT)) {
+        } else if (window->KeyHold(GLFW_KEY_RIGHT) && this->hasGameStarted) {
             this->spaceship->MoveSpaceship(moveOffset, DIRECTION::RIGHT);
+        } else if (window->KeyHold(GLFW_KEY_SPACE) && this->isGameRunning) {
+            this->hasGameStarted = true;
         }
     }
 }
@@ -262,6 +267,7 @@ void hw1::Editor::DrawScene() {
         this->DrawStartButton();
     } else {
         this->DrawSpaceShip();
+        this->DrawText();
     }
 }
 
