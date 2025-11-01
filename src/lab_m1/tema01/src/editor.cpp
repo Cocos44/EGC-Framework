@@ -36,6 +36,8 @@ void hw1::Editor::Init() {
     this->startButton = nullptr;
     this->isGameRunning = false;
 
+    this->gameBall = nullptr;
+
     this->gameScore = 0;
     this->numberOfLives = 3;
 
@@ -59,6 +61,7 @@ void hw1::Editor::Init() {
     // ============================
     // GAME OBJECT CREATION
     this->CreateGameBricks();
+    this->CreateGameBall();
     // ============================
 }
 
@@ -275,6 +278,7 @@ void hw1::Editor::DrawScene() {
         this->DrawSpaceShip();
         this->DrawGameBricks();
         this->DrawText();
+        this->DrawGameBall();
     }
 }
 

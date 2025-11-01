@@ -13,7 +13,7 @@ hw1::Bumper::Bumper(Mesh* mesh, glm::vec3 position, glm::vec3 color,
 Mesh* hw1::CreateBumper(std::string name, float squareLength,
                         glm::vec3 squareColor, glm::vec3 semicircleColor,
                         bool fill) {
-    // Offset so that square is centered at (0, 0)
+    // Offset so that square position is the center of bumper.
     glm::vec3 offset = glm::vec3(-squareLength / 2.0f, -squareLength / 2.0f, 0);
 
     std::vector<VertexFormat> vertices = {

@@ -18,6 +18,7 @@ hw1::Rectangle::Rectangle(Mesh* mesh, glm::vec3 position, glm::vec3 color,
 
 Mesh* hw1::CreateRectangle(const std::string& name, float length, float width,
                            glm::vec3 color, bool fill) {
+    // Offset so that rectangle position is the center.
     glm::vec3 offset = glm::vec3(-length / 2.0f, -width / 2.0f, 0);
 
     std::vector<VertexFormat> vertices = {

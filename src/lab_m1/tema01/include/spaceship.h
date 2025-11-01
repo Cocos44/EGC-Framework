@@ -60,6 +60,8 @@ class SpaceShip {
      */
     int GetNumberOfComponents() const { return this->numberOfComponents; }
 
+    glm::vec3 GetCenterPosition() const { return this->centerPosition; }
+
     /**
      * @brief Calculates center position of spaceship in order to start drawing
      * it in the lower middle part of the screen for the game.

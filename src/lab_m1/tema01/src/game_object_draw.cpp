@@ -32,3 +32,16 @@ void hw1::Editor::DrawGameBricks() {
         }
     }
 }
+
+void hw1::Editor::DrawGameBall() {
+    if (this->hasGameStarted) {
+        glm::mat3 modelMatrix = glm::mat3(1);
+        modelMatrix = this->visMatrix *
+                      transform2D::Translate(this->gameBall->GetPosition().x,
+                                             this->gameBall->GetPosition().y);
+
+        // Render mesh.
+        RenderMesh2D(this->gameBall->GetMesh(), shaders["VertexColor"],
+                     modelMatrix);
+    }
+}

@@ -16,6 +16,7 @@
 #include "components/simple_scene.h"
 #include "components/text_renderer.h"
 #include "lab_m1/tema01/include/bumper.h"
+#include "lab_m1/tema01/include/circle.h"
 #include "lab_m1/tema01/include/line.h"
 #include "lab_m1/tema01/include/object.h"
 #include "lab_m1/tema01/include/rectangle.h"
@@ -203,6 +204,11 @@ class Editor : public gfxc::SimpleScene {
     void CreateGameBricks();
 
     /**
+     * @brief Creates ball that destroys bricks in game.
+     */
+    void CreateGameBall();
+
+    /**
      * @brief Get matrix conversion for translating logic space to view space.
      * @return Conversion matrix.
      */
@@ -336,6 +342,10 @@ class Editor : public gfxc::SimpleScene {
     void DrawGameBricks();
 
     /**
+     * @brief Draws game ball.
+     */
+    void DrawGameBall();
+    /**
      * @brief Draws scene in current frame.
      */
     void DrawScene();
@@ -424,6 +434,8 @@ class Editor : public gfxc::SimpleScene {
     std::vector<glm::vec3> colors = {VEC3_RED, VEC3_GREEN, VEC3_BLUE,
                                      VEC3_PURPLE, VEC3_BROWN};
     std::vector<Rectangle> bricks;
+
+    Circle* gameBall;
 
     int gameScore;
     int numberOfLives;
