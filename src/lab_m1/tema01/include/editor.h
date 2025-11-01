@@ -44,6 +44,8 @@
 #define START_BUTTON_LENGTH 25
 #define START_BUTTON_POSITION glm::vec3(455, 235, 0)
 
+#define GAME_STARTING_POSITION glm::vec3(250, 40, 0)
+
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
 #define VEC3_BLUE glm::vec3(0, 0, 1)
@@ -344,6 +346,11 @@ class Editor : public gfxc::SimpleScene {
      */
     void InitGame();
 
+    /**
+     * @brief Moves spaceship to starting position.
+     */
+    void PlaceSpaceShipStartPosition();
+
    protected:
     // ==================================================
 
@@ -378,6 +385,7 @@ class Editor : public gfxc::SimpleScene {
 
     // GAME OBJECTS
     bool isGameRunning;
+    // GAME OBJECTS
 };
 
 }  // namespace hw1

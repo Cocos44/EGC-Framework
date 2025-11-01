@@ -13,13 +13,6 @@ hw1::StartButton::StartButton(Mesh* mesh, glm::vec3 position, glm::vec3 color,
     : hw1::Object(mesh, position, color, active),
       leftSideLength(leftSideLength) {}
 
-void hw1::StartButton::SetColor(const glm::vec3& color) {
-    for (auto& vertex : this->GetMesh()->vertices) vertex.color = color;
-
-    this->GetMesh()->InitFromData(this->GetMesh()->vertices,
-                                  this->GetMesh()->indices);
-}
-
 Mesh* hw1::CreateStartButton(const std::string& name, float length,
                              glm::vec3 color, bool fill) {
     glm::vec3 offset = glm::vec3(-length / 2.0f, -length / 2.0f, 0);

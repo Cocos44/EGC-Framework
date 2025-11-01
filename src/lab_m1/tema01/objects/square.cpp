@@ -8,7 +8,13 @@
 
 hw1::Square::Square(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                     float length, bool active)
-    : hw1::Object(mesh, position, color, active), length(length) {}
+    : hw1::Object(mesh, position, color, active), length(length) {
+    this->collisionBox.min =
+        glm::vec3(position.x - length / 2, position.y - length / 2, 0);
+
+    this->collisionBox.max =
+        glm::vec3(position.x + length / 2, position.y + length / 2, 0);
+}
 
 Mesh* hw1::CreateSquare(const std::string& name, float length, glm::vec3 color,
                         bool fill) {

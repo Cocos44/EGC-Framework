@@ -55,6 +55,11 @@ class SpaceShip {
     int GetNumberOfComponents() const { return this->numberOfComponents; }
 
     /**
+     * @brief Calculates center position of spaceship in order to start drawing
+     * it in the lower middle part of the screen for the game.
+     */
+    void CalculateCenterPosition();
+    /**
      * @brief Checks if the grid square is used.
      *
      * @param position - Check if object has this position.
@@ -105,6 +110,8 @@ class SpaceShip {
     std::vector<Object> components;
 
     bool positionMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER];
+
+    glm::vec3 centerPosition;
 
     int numberOfComponents;
 };

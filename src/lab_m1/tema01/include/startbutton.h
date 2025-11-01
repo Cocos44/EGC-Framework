@@ -32,12 +32,6 @@ class StartButton : public Object {
                 bool active = true);
 
     float GetLeftSideLength() const { return this->leftSideLength; }
-
-    /**
-     * @brief Changes color for every vertex and loads new data in GPU.
-     * @param color - Color to change mesh to.
-     */
-    void SetColor(const glm::vec3& color);
 };
 
 /**

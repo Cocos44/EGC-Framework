@@ -27,7 +27,8 @@ class Square : public Object {
 
    public:
     /**
-     * @brief Default constructor that calls Object constructor.
+     * @brief Default constructor that calls Object constructor. Sets AABB to
+     * square form.
      */
     Square(Mesh* mesh, glm::vec3 position, glm::vec3 color, float length,
            bool active = true);

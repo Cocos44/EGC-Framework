@@ -16,6 +16,9 @@ hw1::Line::Line(Mesh* mesh, glm::vec3 color, glm::vec3 start, glm::vec3 end,
     this->end = end;
     this->length = glm::distance(start, end);
     this->angle = atan2(end.y - start.y, end.x - start.x);
+
+    this->collisionBox.min = glm::min(start, end);
+    this->collisionBox.max = glm::max(start, end);
 }
 
 Mesh* hw1::CreateLine(const std::string& name, glm::vec3 color) {

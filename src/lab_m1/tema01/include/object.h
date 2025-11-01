@@ -11,12 +11,19 @@
 #pragma once
 
 #include "core/gpu/mesh.h"
+#include "glm/fwd.hpp"
 
 #define BOTTOM_LEFT_CORNER glm::vec3(0, 0, 0)
 
 namespace hw1 {
 
 class Object {
+   private:
+    struct AABB {
+        glm::vec3 min;
+        glm::vec3 max;
+    };
+
    public:
     /**
      * @brief Default constructor. Defaults active to true.
@@ -29,16 +36,36 @@ class Object {
     glm::vec3 color;
     bool active;
 
+   protected:
+    // NOTE: Only used for objects that are in actual game. (square, rectangle,
+    // circle).
+    AABB collisionBox;
+
    public:
     Mesh* GetMesh() const { return this->mesh; }
     glm::vec3 GetPosition() const { return this->position; }
     glm::vec3 GetColor() const { return this->color; }
     bool IsActive() const { return this->active; }
+    AABB getCollisionBox() const { return this->collisionBox; }
 
     void SetMesh(Mesh* mesh) { this->mesh = mesh; }
     void SetPosition(const glm::vec3& position) { this->position = position; }
-    void SetColor(const glm::vec3& color) { this->color = color; }
+
+    /**
+     * @brief Changes color for every vertex and loads new data in GPU.
+     * @param color - Color to change mesh to.
+     */
+    void SetColor(const glm::vec3& color) {
+        for (auto& vertex : this->GetMesh()->vertices) vertex.color = color;
+
+        this->GetMesh()->InitFromData(this->GetMesh()->vertices,
+                                      this->GetMesh()->indices);
+    }
+
     void SetActive(const bool& active) { this->active = active; }
+    void SetCollisionBox(const AABB& collisionBox) {
+        this->collisionBox = collisionBox;
+    }
 };
 
 }  // namespace hw1

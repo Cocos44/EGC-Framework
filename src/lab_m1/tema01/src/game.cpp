@@ -9,6 +9,8 @@
  * @author Grigoras Vlad Andrei
  */
 
+#include <iostream>
+
 #include "lab_m1/tema01/include/editor.h"
 
 void hw1::Editor::InitGame() {
@@ -23,4 +25,17 @@ void hw1::Editor::InitGame() {
     this->borders.clear();
 
     this->isGameRunning = true;
+    this->PlaceSpaceShipStartPosition();
+
+    std::cout << "NUMBER OF COMPONENTS: " << this->spaceship->components.size()
+              << "\n";
+}
+
+void hw1::Editor::PlaceSpaceShipStartPosition() {
+    glm::vec3 offsetToStart =
+        this->spaceship->centerPosition - GAME_STARTING_POSITION;
+
+    for (auto& object : this->spaceship->components) {
+        object.SetPosition(object.GetPosition() - offsetToStart);
+    }
 }

@@ -22,6 +22,8 @@ hw1::SpaceShip::SpaceShip() {
     for (int row = 0; row < SPACESHIP_ROW_NUMBER; row++)
         for (int column = 0; column < SPACESHIP_COLUMN_NUMBER; column++)
             this->positionMatrix[row][column] = false;
+
+    this->centerPosition = glm::vec3(0, 0, 0);
 }
 
 void hw1::SpaceShip::AddObject(Object object, const glm::vec2& matrixPosition) {
@@ -30,6 +32,8 @@ void hw1::SpaceShip::AddObject(Object object, const glm::vec2& matrixPosition) {
     this->positionMatrix[(int)matrixPosition.x][(int)matrixPosition.y] = true;
 
     this->numberOfComponents++;
+
+    this->CalculateCenterPosition();
 }
 
 void hw1::SpaceShip::RemoveObject(const glm::vec3& position,
@@ -47,9 +51,24 @@ void hw1::SpaceShip::RemoveObject(const glm::vec3& position,
             this->positionMatrix[(int)matrixPosition.x][(int)matrixPosition.y] =
                 false;
             this->numberOfComponents--;
+
+            this->CalculateCenterPosition();
+
             return;
         }
     }
+}
+
+void hw1::SpaceShip::CalculateCenterPosition() {
+    glm::vec3 lowestPosition = glm::vec3(600, 600, 0);
+    glm::vec3 highestPosition = glm::vec3(0, 0, 0);
+
+    for (auto& object : this->components) {
+        lowestPosition = glm::min(lowestPosition, object.GetPosition());
+        highestPosition = glm::max(highestPosition, object.GetPosition());
+    }
+
+    this->centerPosition = (lowestPosition + highestPosition) / 2.0f;
 }
 
 bool hw1::SpaceShip::InSpaceShip(const glm::vec3& position) {
