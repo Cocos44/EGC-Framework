@@ -16,6 +16,7 @@
 #include "lab_m1/tema01/include/bumper.h"
 #include "lab_m1/tema01/include/line.h"
 #include "lab_m1/tema01/include/object.h"
+#include "lab_m1/tema01/include/spaceship.h"
 #include "lab_m1/tema01/include/square.h"
 #include "lab_m1/tema01/include/startbutton.h"
 #include "lab_m1/tema01/utils/transform2D.h"
@@ -231,18 +232,6 @@ class Editor : public gfxc::SimpleScene {
                            int mods) override;
 
     /**
-     * @brief Adds object to spaceship if grid square available.
-     *
-     * Checks if player releases left mouse button on grid square, checks if the
-     * grid square selected is available and if it is adds holding object to
-     * spaceship.
-     *
-     * @param mousePositionLogicSpace - Position of mouse in logic space
-     * coordinates.
-     */
-    void PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace);
-
-    /**
      * @brief Event for mouse movement. Renders mesh if the player chose a block
      * to place in grid.
      * @param mouseX - Mouse X position.
@@ -256,6 +245,18 @@ class Editor : public gfxc::SimpleScene {
      * @brief Logic for handling frame end.
      */
     void FrameEnd() override;
+
+    /**
+     * @brief Adds object to spaceship if grid square available.
+     *
+     * Checks if player releases left mouse button on grid square, checks if the
+     * grid square selected is available and if it is adds holding object to
+     * spaceship.
+     *
+     * @param mousePositionLogicSpace - Position of mouse in logic space
+     * coordinates.
+     */
+    void PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace);
 
     /**
      * @brief Draws all lines that define all borders in current frame.
@@ -304,11 +305,6 @@ class Editor : public gfxc::SimpleScene {
     void DrawScene();
 
     /**
-     * @brief Removes an object from the spaceship based on its coordinates.
-     */
-    void RemoveFromSpaceship(const glm::vec3& position);
-
-    /**
      * @brief Gets the grid square from which mouse was released.
      *
      * @param mousePositionLogicSpace - Position of mouse in logic space
@@ -318,6 +314,8 @@ class Editor : public gfxc::SimpleScene {
      * inside grid.
      */
     glm::vec3 GetSquareFromGrid(const glm::vec3& mousePositionLogicSpace);
+
+    glm::vec2 GetPositionFromGrid(const glm::vec3& squarePosition);
 
     /**
      * @brief Converts screen coordinates (pixels) to logic space coordinates.
@@ -341,57 +339,6 @@ class Editor : public gfxc::SimpleScene {
     bool IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
                         const BorderCorners& border) const;
 
-    /**
-     * @brief Checks if the grid square is used.
-     *
-     * @param position - Check if object has this position.
-     *
-     * @return True if inside, false otherwise.
-     */
-    bool InSpaceShip(const glm::vec3& position);
-
-    /**
-     * @brief Based on position given, add or remove object position to grid
-     * matrix.
-     *
-     * @param position - Position of mesh in logic space coordinates.
-     */
-    void ChangeGridMatrixPositionValue(const glm::vec3& position,
-                                       const bool& value);
-
-    /**
-     * @brief Checks if adjacent node can be added to BFS search.
-     *
-     * Checks if row and column are inside matrix boundaries, if
-     * visitedMatrix[row][column] is already visited and if
-     * gridMatrix[row][column] contains a valid node.
-     *
-     * @param visitedMatrix - All visited nodes in BFS search.
-     * @param row - Row that contains node to check.
-     * @param column - Column that contains node to check.
-     *
-     * @return True if node can be added to BFS search, false otherwise.
-     */
-    bool IsBFSNodeValid(bool visitedMatrix[GRID_ROW_NUMBER][GRID_COLUMN_NUMBER],
-                        int row, int column);
-    /**
-     * @brief Checks is spaceship is connected.
-     *
-     * Performs a BFS on the grid matrix starting from the first non false
-     * value found in grid matrix. If visited matrix is equal to the grid
-     * matrix, then the spaceship is connected.
-     *
-     * @return True if spaceship is connected, false otherwise.
-     */
-    bool IsSpaceShipConnected();
-    /**
-     * @brief Returns true if spaceship configuration is valid. If valid,
-     * game can start.
-     *
-     * @return Spaceship config corectness.
-     */
-    bool IsSpaceShipConfig();
-
    protected:
     // ==================================================
 
@@ -414,7 +361,7 @@ class Editor : public gfxc::SimpleScene {
     // ==================================================
 
     // EDITOR + GAME OBJECTS.
-    std::vector<Object> spaceship;
+    SpaceShip* spaceship;
 
     LogicSpace logicSpace;
     ViewSpace viewSpace;

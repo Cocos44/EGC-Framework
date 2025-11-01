@@ -1,0 +1,109 @@
+/**
+ * @file spaceship.h
+ *
+ * @brief Declares Spaceship class. Used to remember spaceship configuration,
+ * AABB and components.
+ *
+ * @author Grigoras Vlad Andrei
+ */
+
+#pragma once
+
+#include <vector>
+
+#include "lab_m1/tema01/include/object.h"
+
+#define SPACESHIP_ROW_NUMBER 9
+#define SPACESHIP_COLUMN_NUMBER 15
+
+namespace hw1 {
+
+/**
+ * @class SpaceShip
+ *
+ * @brief Contains all spaceship objects. Handles adding + removing objects,
+ * conectivity checking + AABB collision model.
+ */
+class SpaceShip {
+    friend class Editor;
+
+   public:
+    SpaceShip();
+
+    ~SpaceShip();
+
+    /**
+     * @brief Adds spaceship component.
+     *
+     * @param object - Object to add.
+     * @param matrixPosition - Position in matrix.
+     */
+    void AddObject(const Object& object, const glm::vec2& matrixPosition);
+
+    /**
+     * @brief Removes spaceship component.
+     *
+     * @param position - Position used to find object in vector.
+     * @param matrixPosition - Position in matrix.
+     */
+    void RemoveObject(const glm::vec3& position,
+                      const glm::vec2& matrixPosition);
+
+   private:
+    int GetNumberOfComponents() const { return this->numberOfComponents; }
+
+    /**
+     * @brief Checks if adjacent node can be added to BFS search.
+     *
+     * Checks if row and column are inside matrix boundaries, if
+     * visitedMatrix[row][column] is already visited and if
+     * gridMatrix[row][column] contains a valid node.
+     *
+     * @param visitedMatrix - All visited nodes in BFS search.
+     * @param row - Row that contains node to check.
+     * @param column - Column that contains node to check.
+     *
+     * @return True if node can be added to BFS search, false otherwise.
+     */
+    bool IsBFSNodeValid(
+        bool visitedMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER],
+        int row, int column);
+
+    /**
+     * @brief Checks is spaceship is connected.
+     *
+     * Performs a BFS on the grid matrix starting from the first non false
+     * value found in grid matrix. If visited matrix is equal to the grid
+     * matrix, then the spaceship is connected.
+     *
+     * @return True if spaceship is connected, false otherwise.
+     */
+    bool IsSpaceShipConnected();
+
+    /**
+     * @brief Checks if the grid square is used.
+     *
+     * @param position - Check if object has this position.
+     *
+     * @return True if inside, false otherwise.
+     */
+    bool InSpaceShip(const glm::vec3& position);
+
+   public:
+    /**
+     * @brief Returns true if spaceship configuration is valid. If valid,
+     * game can start.
+     *
+     * @return Spaceship config corectness.
+     */
+    bool IsConfigCorrect();
+
+   private:
+    std::vector<Object> components;
+
+    bool positionMatrix[SPACESHIP_ROW_NUMBER][SPACESHIP_COLUMN_NUMBER];
+
+    int numberOfComponents;
+};
+
+}  // namespace hw1

@@ -13,6 +13,8 @@
 
 #include "lab_m1/tema01/include/editor.h"
 
+#include "lab_m1/tema01/include/spaceship.h"
+
 hw1::Editor::Editor()
     : textRenderer("/home/vlad/Dev/EGC/EGC-Framework",
                    window->GetResolution().x, window->GetResolution().y) {}
@@ -43,6 +45,8 @@ void hw1::Editor::Init() {
     // Load text font.
     this->textRenderer.Load(
         "/home/vlad/Dev/EGC/EGC-Framework/assets/fonts/Hack-Bold.ttf", 40);
+
+    this->spaceship = new SpaceShip();
 
     this->CreateEditorBorders();
     this->CreateGrid();
@@ -125,7 +129,9 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
         for (auto& border : this->borders) {
             // Find in which border the mouse button was presesd.
             if (this->IsInsideBorder(mousePositionLogicSpace, border)) {
-                if (this->spaceship.size() == SPACESHIP_MAX_COMPONENTS) return;
+                if (this->spaceship->numberOfComponents ==
+                    SPACESHIP_MAX_COMPONENTS)
+                    return;
                 // Player chose square object.
                 if (border.name == "chooseSquare") {
                     this->isLeftButtonHold = true;
@@ -141,6 +147,9 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
                     this->buttonHoldObject = new Bumper(
                         meshes["spaceship_bumper"], mousePositionLogicSpace,
                         VEC3_LIGHT_GRAY, true);
+                } else if (border.name == "startButton" &&
+                           this->spaceship->IsConfigCorrect()) {
+                    this->isGameRunning = true;
                 }
             } else {
                 continue;
@@ -158,10 +167,8 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
         glm::vec3 squarePosition =
             this->GetSquareFromGrid(mousePositionLogicSpace);
 
-        this->RemoveFromSpaceship(this->GetSquareFromGrid(squarePosition));
-
-        this->ChangeGridMatrixPositionValue(
-            this->GetSquareFromGrid(squarePosition), false);
+        this->spaceship->RemoveObject(
+            squarePosition, this->GetPositionFromGrid(squarePosition));
     }
 }
 
@@ -186,17 +193,6 @@ void hw1::Editor::OnMouseBtnRelease(int mouseX, int mouseY, int button,
     }
 }
 
-void hw1::Editor::DrawScene() {
-    this->DrawChoosingBlocks();
-    this->DrawSpaceShip();
-    this->DrawHoldObject();
-    this->DrawBorders();
-    this->DrawGrid();
-    this->DrawCounterSection();
-    this->DrawText();
-    this->DrawStartButton();
-}
-
 void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
     if (this->isLeftButtonHold && this->buttonHoldObject != nullptr) {
         // Convert mouse coordinates to logic space
@@ -209,6 +205,94 @@ void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
 }
 
 void hw1::Editor::FrameEnd() {}
+
+void hw1::Editor::PlaceObjectInGrid(const glm::vec3& mousePositionLogicSpace) {
+    for (const auto& border : this->borders) {
+        if (border.name == "gridBlocks" &&
+            this->IsInsideBorder(mousePositionLogicSpace, border)) {
+            glm::vec3 resultCoordinate =
+                this->GetSquareFromGrid(mousePositionLogicSpace);
+
+            // If the mouse is over a valid grid square and object is not
+            // already there.
+            if (resultCoordinate.x >= 0 && resultCoordinate.y >= 0 &&
+                !this->spaceship->InSpaceShip(resultCoordinate)) {
+                std::string meshID =
+                    this->buttonHoldObject->GetMesh()->GetMeshID();
+
+                if (meshID == "spaceship_square") {
+                    // Add new square to spaceship vector.
+                    this->spaceship->AddObject(
+                        Square(meshes["spaceship_square"], resultCoordinate,
+                               VEC3_LIGHT_GRAY, SPACESHIP_SQUARE_LENGTH),
+                        this->GetPositionFromGrid(resultCoordinate));
+                } else if (meshID == "spaceship_bumper") {
+                    // Add new bumper to spaceship vector.
+                    this->spaceship->AddObject(
+                        Bumper(meshes["spaceship_bumper"], resultCoordinate,
+                               VEC3_LIGHT_GRAY),
+                        this->GetPositionFromGrid(resultCoordinate));
+                }
+            }
+
+            // No need to check further objects.
+            break;
+        }
+    }
+}
+
+void hw1::Editor::DrawScene() {
+    if (!this->isGameRunning) {
+        this->DrawChoosingBlocks();
+        this->DrawSpaceShip();
+        this->DrawHoldObject();
+        this->DrawBorders();
+        this->DrawGrid();
+        this->DrawCounterSection();
+        this->DrawText();
+        this->DrawStartButton();
+    } else {
+    }
+}
+
+glm::vec3 hw1::Editor::GetSquareFromGrid(
+    const glm::vec3& mousePositionLogicSpace) {
+    // Go through every grid square.
+    for (const auto& square : this->grid) {
+        // Compute area of grid square.
+        glm::vec3 bottomLeft =
+            square.GetPosition() -
+            glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
+        glm::vec3 topRight =
+            square.GetPosition() +
+            glm::vec3(GRID_SQUARE_LENGTH / 2.0f, GRID_SQUARE_LENGTH / 2.0f, 0);
+
+        // Check if player released mouse button on this grid square.
+        if (mousePositionLogicSpace.x >= bottomLeft.x &&
+            mousePositionLogicSpace.x <= topRight.x &&
+            mousePositionLogicSpace.y >= bottomLeft.y &&
+            mousePositionLogicSpace.y <= topRight.y) {
+            return square.GetPosition();
+        }
+    }
+
+    // If no match, return an invalid square position that will be checked.
+    return glm::vec3(-1, -1, 0);
+}
+
+glm::vec2 hw1::Editor::GetPositionFromGrid(const glm::vec3& squarePosition) {
+    // Go through every grid square.
+    for (int i = 0; i < this->grid.size(); i++) {
+        if (this->grid[i].GetPosition() == squarePosition) {
+            int row = i / GRID_COLUMN_NUMBER;
+            int column = i % GRID_COLUMN_NUMBER;
+
+            return glm::vec2(row, column);
+        }
+    }
+
+    return glm::vec2(-1, -1);
+}
 
 glm::vec3 hw1::Editor::ConvertScreenToLogicSpace(int mouseX, int mouseY) {
     // Converts view space coordinates to logic space coordinates.

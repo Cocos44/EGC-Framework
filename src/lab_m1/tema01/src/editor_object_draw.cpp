@@ -106,7 +106,7 @@ void hw1::Editor::DrawSpaceShip() {
     glm::mat3 modelMatrix = glm::mat3(1);
 
     // Go through every spaceship object to render it.
-    for (auto& object : this->spaceship) {
+    for (auto& object : this->spaceship->components) {
         // Move the square to wanted position.
         modelMatrix =
             this->visMatrix * transform2D::Translate(object.GetPosition().x,
@@ -123,7 +123,8 @@ void hw1::Editor::DrawSpaceShip() {
 void hw1::Editor::DrawCounterSection() {
     glm::mat3 modelMatrix = glm::mat3(1);
 
-    for (int i = 0; i < COUNTER_NUMBER - this->spaceship.size(); i++) {
+    for (int i = 0; i < COUNTER_NUMBER - this->spaceship->numberOfComponents;
+         i++) {
         // Move the square to wanted position.
         modelMatrix =
             this->visMatrix *
@@ -156,7 +157,7 @@ void hw1::Editor::DrawStartButton() {
                                          this->startButton->GetPosition().y);
 
     // Render button color depending on spaceship config.
-    if (this->IsSpaceShipConfig())
+    if (this->spaceship->IsConfigCorrect())
         this->startButton->SetColor(VEC3_GREEN);
     else
         this->startButton->SetColor(VEC3_RED);
