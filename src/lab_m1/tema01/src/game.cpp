@@ -131,8 +131,6 @@ void hw1::Editor::CheckCollisionSpaceShip() {
 
             // Set new speed.
             gameBall->SetVelocity(newBallXSpeed, newBallYSpeed);
-
-            return;
         }
     }
 }
