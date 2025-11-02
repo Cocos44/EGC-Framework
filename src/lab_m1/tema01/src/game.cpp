@@ -83,30 +83,29 @@ void hw1::Editor::CheckCollisionSpaceShip() {
              * on: - Angle of ball and center of the spaceship.
              *     - Original ball speed.
              */
-            float objectLeftBottomEdge = object->collisionBox.min.x;
-            float objectRighBottomtEdge = object->collisionBox.max.x;
-            float objectLeftTopEdge = object->collisionBox.min.y;
-            float objectRightTopEdge = object->collisionBox.max.y;
+            float objectLeft = object->collisionBox.min.x;
+            float objectRight = object->collisionBox.max.x;
+            float objectBottom = object->collisionBox.min.y;
+            float objectTop = object->collisionBox.max.y;
 
-            float ballBottomLeftEdge = this->gameBall->collisionBox.min.x;
-            float ballTopRightEdge = this->gameBall->collisionBox.max.x;
-            float ballTopLeftEdge = this->gameBall->collisionBox.min.y;
+            float ballLeft = this->gameBall->collisionBox.min.x;
+            float ballRight = this->gameBall->collisionBox.max.x;
+            float ballBottom = this->gameBall->collisionBox.min.y;
 
             // Calculates overlap on the X axis.
             // Ball can either come from the left or the right side.
             float overlapX =
-                std::min(ballTopRightEdge - objectLeftBottomEdge,
-                         objectRighBottomtEdge - ballBottomLeftEdge);
+                std::min(ballRight - objectLeft, objectRight - ballLeft);
 
             // Calculates overlap on the Y axis.
             // Ball can only come down on the spaceship.
-            float overlapY = objectRightTopEdge - ballTopLeftEdge;
+            float overlapY = objectTop - ballBottom;
 
             float newBallXSpeed = 0;
             float newBallYSpeed = 0;
 
             // Check which overlap is smaller.
-            if (overlapX < overlapY) {
+            if (overlapX <= overlapY) {
                 newBallXSpeed = -gameBall->GetXSpeed();
                 newBallYSpeed = gameBall->GetYSpeed();
             } else {
@@ -123,6 +122,7 @@ void hw1::Editor::CheckCollisionSpaceShip() {
                               ((float)(this->spaceship->highestPosition.x -
                                        this->spaceship->lowestPosition.x) /
                                2);
+                angle *= glm::radians(60.0f);
 
                 // Get new X and Y speed.
                 newBallXSpeed = ballSpeed * sin(angle);
@@ -139,6 +139,8 @@ void hw1::Editor::CheckCollisionBricks() {
     glm::vec3 ballPosition = this->gameBall->GetPosition();
     float ballRadius = this->gameBall->GetRadius();
 
+    bool hasBounced = false;
+
     for (auto iterator = bricks.begin(); iterator != bricks.end();) {
         if (iterator->collisionBox.IsCollision(gameBall->collisionBox)) {
             /**
@@ -146,63 +148,69 @@ void hw1::Editor::CheckCollisionBricks() {
              * If there is a vertical collision, we just invert the X speed.
              * If there is a horizontal collision, we just invert the Y speed.
              */
-            float brickBottomLeftEdge = iterator->collisionBox.min.x;
-            float brickBottomRightEdge = iterator->collisionBox.max.x;
-            float brickTopLeftEdge = iterator->collisionBox.min.y;
-            float brickTopRightEdge = iterator->collisionBox.max.y;
+            float brickLeft = iterator->collisionBox.min.x;
+            float brickRight = iterator->collisionBox.max.x;
+            float brickBottom = iterator->collisionBox.min.y;
+            float brickTop = iterator->collisionBox.max.y;
 
-            float ballBottomLeftEdge = this->gameBall->collisionBox.min.x;
-            float ballBottomRightEdge = this->gameBall->collisionBox.max.x;
-            float ballTopLeftEdge = this->gameBall->collisionBox.min.y;
-            float ballTopRightEdge = this->gameBall->collisionBox.max.y;
+            float ballLeft = this->gameBall->collisionBox.min.x;
+            float ballRight = this->gameBall->collisionBox.max.x;
+            float ballBottom = this->gameBall->collisionBox.min.y;
+            float ballTop = this->gameBall->collisionBox.max.y;
 
-            // Compute overlap along both axes
+            // Compute overlap along both axes.
             float overlapX =
-                std::min(ballBottomRightEdge - brickBottomLeftEdge,
-                         brickBottomRightEdge - ballBottomLeftEdge);
-            float overlapY = std::min(ballTopRightEdge - brickTopLeftEdge,
-                                      brickTopRightEdge - ballTopLeftEdge);
+                std::min(ballRight - brickLeft, brickRight - ballLeft);
+            float overlapY =
+                std::min(ballTop - brickBottom, brickTop - ballBottom);
 
-            float newBallXSpeed = 0;
-            float newBallYSpeed = 0;
+            // If we already made contact with another brick, ignore velocity
+            // change.
+            if (!hasBounced) {
+                float newBallXSpeed = 0;
+                float newBallYSpeed = 0;
 
-            // Check which overlap is smaller.
-            if (overlapX < overlapY) {
-                newBallXSpeed = -this->gameBall->GetXSpeed();
-                newBallYSpeed = this->gameBall->GetYSpeed();
-            } else {
-                newBallXSpeed = this->gameBall->GetXSpeed();
-                newBallYSpeed = -this->gameBall->GetYSpeed();
+                // Check which overlap is smaller.
+                if (overlapX <= overlapY) {
+                    newBallXSpeed = -this->gameBall->GetXSpeed();
+                    newBallYSpeed = this->gameBall->GetYSpeed();
+                } else {
+                    newBallXSpeed = this->gameBall->GetXSpeed();
+                    newBallYSpeed = -this->gameBall->GetYSpeed();
+                }
+
+                // Set new ball speed.
+                gameBall->SetVelocity(newBallXSpeed, newBallYSpeed);
+
+                hasBounced = true;
             }
-
-            // Set new ball speed.
-            gameBall->SetVelocity(newBallXSpeed, newBallYSpeed);
 
             iterator->SetNumberOfLives(iterator->GetNumberOfLives() - 1);
 
             // If number of lives == 0 => delete brick.
             if (iterator->GetNumberOfLives() <= 0)
                 iterator = bricks.erase(iterator);
+            else
+                iterator++;
 
             gameScore += 10;
 
-            // No bricks remaining => Player won.
-            if (bricks.empty()) {
-                hasGameStarted = false;
-                hasWon = true;
-            }
-
-            return;
         } else {
-            ++iterator;
+            iterator++;
         }
+    }
+
+    // No bricks remaining => Player won.
+    if (bricks.empty()) {
+        hasGameStarted = false;
+        hasWon = true;
     }
 }
 
 void hw1::Editor::CheckCollision() {
     /**
-     * WARN: For each frame, we only check for ONE collision. If we try mulitple
-     * collisions per frame, it gets really buggy.
+     * WARN: For each frame, we only change the ball position ONCE. If we try
+     * mulitple changes per frame, it gets really buggy.
      */
     glm::vec3 ballPosition = gameBall->GetPosition();
 
