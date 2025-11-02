@@ -167,25 +167,24 @@ void hw1::Editor::CheckCollisionBricks() {
             // If we already made contact with another brick, ignore velocity
             // change.
             if (!hasBounced) {
-                float newBallXSpeed = 0;
-                float newBallYSpeed = 0;
+                float newBallXSpeed = this->gameBall->GetXSpeed();
+                float newBallYSpeed = this->gameBall->GetYSpeed();
 
                 // Check which overlap is smaller.
-                if (overlapX <= overlapY) {
-                    newBallXSpeed = -this->gameBall->GetXSpeed();
-                    newBallYSpeed = this->gameBall->GetYSpeed();
-                } else {
-                    newBallXSpeed = this->gameBall->GetXSpeed();
-                    newBallYSpeed = -this->gameBall->GetYSpeed();
-                }
+                if (overlapX <= overlapY)
+                    // Vertical collision => invert X speed
+                    newBallXSpeed = -newBallXSpeed;
+                else
+                    // Horizontal collision => invert Y speed
+                    newBallYSpeed = -newBallYSpeed;
 
-                // Set new ball speed.
-                gameBall->SetVelocity(newBallXSpeed, newBallYSpeed);
+                this->gameBall->SetVelocity(newBallXSpeed, newBallYSpeed);
 
                 hasBounced = true;
             }
 
             iterator->SetNumberOfLives(iterator->GetNumberOfLives() - 1);
+            iterator->SetColor(this->colors[iterator->GetNumberOfLives() - 1]);
 
             // If number of lives == 0 => delete brick.
             if (iterator->GetNumberOfLives() <= 0)

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "lab_m1/tema01/include/object.h"
 
 namespace hw1 {
@@ -30,7 +32,7 @@ class Rectangle : public Object {
      * rectangle form.
      */
     Rectangle(Mesh* mesh, glm::vec3 position, glm::vec3 color, float length,
-              float width, bool active = true);
+              float width, int numberOfLives, bool active = true);
 
     float GetLength() const { return this->length; }
     float GetWidth() const { return this->width; }

@@ -300,10 +300,10 @@ void hw1::Editor::DrawScene(float deltaTimeSeconds) {
         this->DrawText();
         this->DrawStartButton();
     } else {
+        this->DrawGameBall(deltaTimeSeconds);
         this->DrawSpaceShip();
         this->DrawGameBricks();
         this->DrawText();
-        this->DrawGameBall(deltaTimeSeconds);
     }
 }
 
