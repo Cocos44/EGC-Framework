@@ -35,9 +35,17 @@ class Rectangle : public Object {
     float GetLength() const { return this->length; }
     float GetWidth() const { return this->width; }
 
+    void SetNumberOfLives(const int& numberOfLives) {
+        this->numberOfLives = numberOfLives;
+    }
+
+    int GetNumberOfLives() const { return this->numberOfLives; }
+
    private:
     float length;
     float width;
+
+    int numberOfLives;
 };
 
 /**

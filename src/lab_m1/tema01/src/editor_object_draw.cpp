@@ -105,20 +105,23 @@ void hw1::Editor::DrawHoldObject() {
 }
 
 void hw1::Editor::DrawSpaceShip() {
-    glm::mat3 modelMatrix = glm::mat3(1);
+    if (!this->hasWon && !this->hasLost) {
+        glm::mat3 modelMatrix = glm::mat3(1);
 
-    // Go through every spaceship object to render it.
-    for (auto& object : this->spaceship->components) {
-        // Move the square to wanted position.
-        modelMatrix =
-            this->visMatrix * transform2D::Translate(object->GetPosition().x,
-                                                     object->GetPosition().y);
+        // Go through every spaceship object to render it.
+        for (auto& object : this->spaceship->components) {
+            // Move the square to wanted position.
+            modelMatrix = this->visMatrix *
+                          transform2D::Translate(object->GetPosition().x,
+                                                 object->GetPosition().y);
 
-        // Render mesh.
-        RenderMesh2D(object->GetMesh(), shaders["VertexColor"], modelMatrix);
+            // Render mesh.
+            RenderMesh2D(object->GetMesh(), shaders["VertexColor"],
+                         modelMatrix);
 
-        // Reset modelMatrix.
-        modelMatrix = glm::mat3(1);
+            // Reset modelMatrix.
+            modelMatrix = glm::mat3(1);
+        }
     }
 }
 
@@ -142,44 +145,14 @@ void hw1::Editor::DrawCounterSection() {
     }
 }
 
-void hw1::Editor::DrawText() {
+void hw1::Editor::DrawEditorText() {
     // Use visMatrix to convert logic space to screen space.
+    glm::vec3 startingPosition = visMatrix * glm::vec3(50, 40, 0);
 
-    if (!this->isGameRunning) {
-        glm::vec3 startingPosition = visMatrix * glm::vec3(50, 40, 0);
-
-        // Render the text
-        this->textRenderer.RenderText("BREAKOUT", startingPosition.x,
-                                      startingPosition.y, 1.5f,
-                                      glm::vec3(1.0f, 1.0f, 0.0f));
-    } else {
-        if (!this->hasGameStarted) {
-            glm::vec3 startingPosition = visMatrix * glm::vec3(170, 5, 0);
-            this->textRenderer.RenderText(
-                "Press [Space Bar] To Start", startingPosition.x,
-                startingPosition.y, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-        } else {
-            // Render game score.
-            std::string gameScoreText =
-                "Score: " + std::to_string(this->gameScore);
-
-            glm::vec3 startingPosition = visMatrix * glm::vec3(2, 5, 0);
-
-            this->textRenderer.RenderText(gameScoreText, startingPosition.x,
-                                          startingPosition.y, 0.7f,
-                                          glm::vec3(1.0f, 1.0f, 1.0f));
-
-            // Render number of lives.
-            std::string numberOfLivesText =
-                "Lives: " + std::to_string(this->numberOfLives);
-
-            startingPosition = visMatrix * glm::vec3(460, 5, 0);
-
-            this->textRenderer.RenderText(numberOfLivesText, startingPosition.x,
-                                          startingPosition.y, 0.7f,
-                                          glm::vec3(1.0f, 1.0f, 1.0f));
-        }
-    }
+    // Render the text
+    this->textRenderer.RenderText("BREAKOUT", startingPosition.x,
+                                  startingPosition.y, 1.5f,
+                                  glm::vec3(1.0f, 1.0f, 0.0f));
 }
 
 void hw1::Editor::DrawStartButton() {

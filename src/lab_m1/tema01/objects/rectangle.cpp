@@ -8,7 +8,9 @@
 
 hw1::Rectangle::Rectangle(Mesh* mesh, glm::vec3 position, glm::vec3 color,
                           float length, float width, bool active)
-    : hw1::Object(mesh, position, color, active), length(length) {
+    : hw1::Object(mesh, position, color, active),
+      length(length),
+      numberOfLives(3) {
     this->collisionBox.min =
         glm::vec3(position.x - length / 2, position.y - width / 2, 0);
 

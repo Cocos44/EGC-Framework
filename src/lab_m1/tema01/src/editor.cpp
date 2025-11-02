@@ -35,6 +35,8 @@ void hw1::Editor::Init() {
     this->buttonHoldObject = nullptr;
     this->startButton = nullptr;
     this->isGameRunning = false;
+    this->hasWon = false;
+    this->hasLost = false;
 
     this->gameBall = nullptr;
 
@@ -127,6 +129,14 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
     DrawScene(deltaTimeSeconds);
 }
 
+void hw1::Editor::OnKeyPress(int key, int mods) {
+    if (key == GLFW_KEY_SPACE && this->isGameRunning && !this->hasGameStarted &&
+        (!this->hasLost || this->hasWon)) {
+        this->hasGameStarted = true;
+        this->PlaceBallStartingPosition();
+    }
+}
+
 void hw1::Editor::OnInputUpdate(float deltaTime, int mods) {
     if (this->isGameRunning) {
         float moveOffset = GAME_PALLET_SPEED * deltaTime;
@@ -134,9 +144,6 @@ void hw1::Editor::OnInputUpdate(float deltaTime, int mods) {
             this->spaceship->MoveSpaceship(moveOffset, DIRECTION::LEFT);
         } else if (window->KeyHold(GLFW_KEY_RIGHT) && this->hasGameStarted) {
             this->spaceship->MoveSpaceship(moveOffset, DIRECTION::RIGHT);
-        } else if (window->KeyHold(GLFW_KEY_SPACE) && this->isGameRunning) {
-            this->hasGameStarted = true;
-            this->PlaceBallStartingPosition();
         }
     }
 }
@@ -153,6 +160,13 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
         for (auto& border : this->borders) {
             // Find in which border the mouse button was presesd.
             if (this->IsInsideBorder(mousePositionLogicSpace, border)) {
+                if (border.name == "startButton" &&
+                    this->spaceship->IsConfigCorrect()) {
+                    this->InitGame();
+
+                    return;
+                }
+
                 if (this->spaceship->numberOfComponents ==
                     SPACESHIP_MAX_COMPONENTS)
                     return;
@@ -171,9 +185,6 @@ void hw1::Editor::OnMouseBtnPress(int mouseX, int mouseY, int button,
                     this->buttonHoldObject = new Bumper(
                         meshes["spaceship_bumper"], mousePositionLogicSpace,
                         VEC3_LIGHT_GRAY, true);
-                } else if (border.name == "startButton" &&
-                           this->spaceship->IsConfigCorrect()) {
-                    this->InitGame();
                 }
             } else {
                 continue;
@@ -227,7 +238,12 @@ void hw1::Editor::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) {
     }
 }
 
-void hw1::Editor::FrameEnd() {}
+void hw1::Editor::FrameEnd() {
+    if (window->ShouldClose()) {
+        this->CleanupEditorResources();
+        this->CleanupGameResources();
+    }
+}
 
 void hw1::Editor::PlaceObjectInSpaceShip(
     const glm::vec3& mousePositionLogicSpace) {
@@ -265,7 +281,15 @@ void hw1::Editor::PlaceObjectInSpaceShip(
     }
 }
 
+void hw1::Editor::DrawText() {
+    if (this->isGameRunning)
+        this->DrawGameText();
+    else
+        this->DrawEditorText();
+}
+
 void hw1::Editor::DrawScene(float deltaTimeSeconds) {
+    this->DrawText();
     if (!this->isGameRunning) {
         this->DrawChoosingBlocks();
         this->DrawSpaceShip();
@@ -343,4 +367,38 @@ bool hw1::Editor::IsInsideBorder(const glm::vec3& mousePositionLogicSpace,
            (mousePositionLogicSpace.y >= border.bottomLeft.y) &&
            (mousePositionLogicSpace.x <= border.topRight.x) &&
            (mousePositionLogicSpace.y <= border.topRight.y);
+}
+
+void hw1::Editor::CleanupEditorResources() {
+    if (this->startButton != nullptr) {
+        delete this->startButton;
+        this->startButton = nullptr;
+    }
+
+    if (this->buttonHoldObject != nullptr) {
+        delete this->buttonHoldObject;
+        this->buttonHoldObject = nullptr;
+    }
+
+    this->grid.clear();
+    this->componentsCounter.clear();
+    this->blocksToChoose.clear();
+
+    this->delimiters.clear();
+    this->borders.clear();
+}
+
+void hw1::Editor::CleanupGameResources() {
+    if (this->spaceship != nullptr) {
+        delete this->spaceship;
+        this->spaceship = nullptr;
+    }
+
+    if (this->gameBall != nullptr) {
+        delete this->gameBall;
+        this->gameBall = nullptr;
+    }
+
+    this->bricks.clear();
+    this->colors.clear();
 }

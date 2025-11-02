@@ -36,7 +36,7 @@ class SpaceShip {
    public:
     SpaceShip();
 
-    ~SpaceShip();
+    ~SpaceShip() {}
 
     /**
      * @brief Adds spaceship component.

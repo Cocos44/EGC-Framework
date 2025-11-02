@@ -50,14 +50,14 @@
 #define GAME_STARTING_POSITION glm::vec3(250, 28, 0)
 #define GAME_BALL_STARTING_POSITION glm::vec3(250, 50, 0)
 #define GAME_BRICKS_STARTING_POSITION glm::vec3(0.5f, 230, 0)
-#define GAME_PALLET_SPEED 160.0f
+#define GAME_PALLET_SPEED 220.0f
 #define GAME_BALL_SPEED 150.0f
 #define GAME_BRICK_LENGTH 38
 #define GAME_BRICK_WIDTH 22
 #define GAME_ROW_NUMBER 5
 #define GAME_COLUMN_NUMBER 12
 #define GAME_HORIZONTAL_OFFSET glm::vec3(41.6f, 0, 0)
-#define GAME_VERTICAL_OFFSET glm::vec3(0, 22.3f, 0)
+#define GAME_VERTICAL_OFFSET glm::vec3(0, 23.3f, 0)
 
 #define VEC3_RED glm::vec3(1, 0, 0)
 #define VEC3_GREEN glm::vec3(0, 1, 0)
@@ -251,6 +251,12 @@ class Editor : public gfxc::SimpleScene {
      */
 
     /**
+     * @brief Checks what key was pressed.
+     * @param key - Key that was pressed.
+     * @param mods - Modifiers (not used).
+     */
+    void OnKeyPress(int key, int mods) override;
+    /**
      * @brief Handles key hold inputs.
      *
      * @param deltaTimeSeconds - Time passed since previous frame.
@@ -258,6 +264,14 @@ class Editor : public gfxc::SimpleScene {
      */
     void OnInputUpdate(float deltaTime, int mods) override;
 
+    /**
+     * @brief Handles mouse button press logic.
+     *
+     * @param mouseX - X coordinates of where player clicked.
+     * @param mouseY - Y coordinates of where player clicked.
+     * @param button - What mouse button was hit.
+     * @param mods - Modifiers (not used).
+     */
     void OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) override;
 
     /**
@@ -329,7 +343,17 @@ class Editor : public gfxc::SimpleScene {
     void DrawCounterSection();
 
     /**
-     * @brief Draws text in current frame.
+     * @brief Draws game text in current frame.
+     */
+    void DrawGameText();
+
+    /**
+     * @brief Draws editor text in current frame.
+     */
+    void DrawEditorText();
+
+    /**
+     * @brief Draws text according to game state (either in editor or in game).
      */
     void DrawText();
 
@@ -365,6 +389,16 @@ class Editor : public gfxc::SimpleScene {
      */
     glm::vec3 GetSquareFromGrid(const glm::vec3& mousePositionLogicSpace);
 
+    /**
+     * @brief Returns position for the matrix grid.
+     *
+     * Gets square position, goes through every one and when match is found,
+     * return a 2 element vector containing i and j for matrix.
+     *
+     * @param squarePosition - Position of square from grid.
+     *
+     * @return i and j for matrix.
+     */
     glm::vec2 GetPositionFromGrid(const glm::vec3& squarePosition);
 
     /**
@@ -412,16 +446,31 @@ class Editor : public gfxc::SimpleScene {
     void PlaceBallStartingPosition();
 
     /**
-     * @brief Finds element in vector and deletes it.
-     *
-     * @param position - Object to delete
+     * @brief Checks if ball is colliding with an object.
      */
-    void RemoveBrick(const glm::vec3& position);
+    void CheckCollision();
 
     /**
-     * @brief Check if ball is colliding with an object.
+     * @brief Handles ball colliding with spaceship.
      */
-    void CheckCollision(float deltaTimeSeconds);
+    void CheckCollisionSpaceShip();
+
+    /**
+     * @brief Handles ball colliding with a game brick.
+     */
+    void CheckCollisionBricks();
+
+    /**
+     * @brief Deletes all dynamically allocated variables + vectors + all other
+     * resources related to the game.
+     */
+    void CleanupEditorResources();
+
+    /**
+     * @brief Deletes all dynamically allocated variables + vectors + all other
+     * resources related to the game.
+     */
+    void CleanupGameResources();
 
    protected:
     // ==================================================
@@ -458,6 +507,9 @@ class Editor : public gfxc::SimpleScene {
     // GAME OBJECTS
     bool isGameRunning;
     bool hasGameStarted;
+
+    bool hasWon;
+    bool hasLost;
 
     std::vector<glm::vec3> colors = {VEC3_RED, VEC3_GREEN, VEC3_BLUE,
                                      VEC3_PURPLE, VEC3_BROWN};

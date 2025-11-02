@@ -66,6 +66,8 @@ void hw1::SpaceShip::CalculateCenterPosition() {
     this->lowestPosition = glm::vec3(600, 600, 0);
     this->highestPosition = glm::vec3(0, 0, 0);
 
+    // To calculate center position, calculate the average between highest and
+    // lowest position.
     for (const auto& object : components) {
         this->lowestPosition =
             glm::min(this->lowestPosition, object->GetPosition());
@@ -116,14 +118,17 @@ void hw1::SpaceShip::MoveSpaceship(float moveOffset, DIRECTION direction) {
     glm::vec3 offset = (direction == DIRECTION::LEFT)
                            ? glm::vec3(-moveOffset, 0, 0)
                            : glm::vec3(moveOffset, 0, 0);
+
+    // Move every spaceship object to current position + offset and recalculate
+    // spaceship center position.
     for (auto& object : this->components)
-        // Move object
         object->SetPosition(object->GetPosition() + offset);
 
     this->CalculateCenterPosition();
 }
 
 bool hw1::SpaceShip::InSpaceShip(const glm::vec3& position) {
+    // Checks if there is an object at given position.
     for (auto& object : this->components)
         if (object->GetPosition() == position) return true;
 
@@ -138,7 +143,7 @@ bool hw1::SpaceShip::IsBFSNodeValid(
         column >= SPACESHIP_COLUMN_NUMBER)
         return false;
 
-    // Must be filled and not already visited
+    // Must be filled and not visited.
     if (!this->positionMatrix[row][column] || visitedMatrix[row][column])
         return false;
 
@@ -206,6 +211,7 @@ bool hw1::SpaceShip::IsSpaceShipConnected() {
         }
     }
 
+    // Check if the visited matrix is identical to the positional matrix.
     for (int i = 0; i < SPACESHIP_ROW_NUMBER; i++)
         for (int j = 0; j < SPACESHIP_COLUMN_NUMBER; j++)
             if (visitedMatrix[i][j] != this->positionMatrix[i][j]) return false;
@@ -214,6 +220,8 @@ bool hw1::SpaceShip::IsSpaceShipConnected() {
 }
 
 bool hw1::SpaceShip::IsConfigCorrect() {
+    // If the spaceship is connected and has at least one component,
+    // configuration is correct.
     if (!this->numberOfComponents) return false;
     if (!this->IsSpaceShipConnected()) return false;
 
