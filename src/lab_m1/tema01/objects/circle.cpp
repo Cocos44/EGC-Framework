@@ -22,6 +22,15 @@ hw1::Circle::Circle(Mesh* mesh, glm::vec3 position, glm::vec3 color,
         glm::vec3(position.x + radius, position.y + radius, 0);
 }
 
+void hw1::Circle::SetPosition(const glm::vec3& position) {
+    this->position = position;
+
+    this->collisionBox.min =
+        position - glm::vec3(this->radius / 2, this->radius / 2, 0);
+    this->collisionBox.max =
+        position + glm::vec3(this->radius / 2, this->radius / 2, 0);
+}
+
 Mesh* hw1::CreateCircle(const std::string& name, float radius, glm::vec3 color,
                         bool fill) {
     // Offset so that circle is positioned in center.

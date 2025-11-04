@@ -42,6 +42,7 @@ class Circle : public Object {
     float GetXSpeed() const { return this->velocity.x; }
     float GetYSpeed() const { return this->velocity.y; }
 
+    void SetPosition(const glm::vec3& position);
     void SetXSpeed(const float& xSpeed) { this->velocity.x = xSpeed; }
     void SetYSpeed(const float& ySpeed) { this->velocity.x = ySpeed; }
     void SetVelocity(const glm::vec2& velocity) { this->velocity = velocity; }
