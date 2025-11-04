@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <unordered_map>
-
 #include "lab_m1/tema01/include/object.h"
 
 namespace hw1 {
@@ -43,6 +41,11 @@ class Rectangle : public Object {
 
     int GetNumberOfLives() const { return this->numberOfLives; }
 
+    /**
+     * @brief Shrinks rectangle when ball hits it.
+     */
+    void Shrink();
+
    private:
     float length;
     float width;
@@ -52,11 +55,13 @@ class Rectangle : public Object {
 
 /**
  * @brief Creates a mesh that resembles a rectangle.
+ *
  * @param name - Name of mesh.
- * @param length - Default length of rectangle.
- * @param width - Default width or rectangle.
+ * @param length - Length of rectangle.
+ * @param width - Width or rectangle.
  * @param color - Color of mesh.
  * @param fill - True if mesh should be filled with color, false otherwise.
+ *
  * @return Newly created mesh.
  */
 Mesh* CreateRectangle(const std::string& name, float length, float width,

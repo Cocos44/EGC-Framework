@@ -8,7 +8,7 @@
  *
  * @see Spaceship
  *
- * @author Grigoras Vlad Andrei.
+ * @author Grigoras Vlad Andrei
  */
 
 #include "lab_m1/tema01/include/spaceship.h"

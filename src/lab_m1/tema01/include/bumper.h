@@ -1,6 +1,8 @@
 /**
  * @file bumper.h
+ *
  * @brief Defines Bumper class and method to create a bumper mesh.
+ *
  * @author Grigoras Vlad Andrei
  */
 

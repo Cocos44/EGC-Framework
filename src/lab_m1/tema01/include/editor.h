@@ -1,7 +1,9 @@
 /**
  * @file editor.h
+ *
  * @brief Declares and describes the Editor class, used to implement the
- * spaceship editor logic.
+ * spaceship editor + game logic.
+ *
  * @author Grigoras Vlad Andrei
  */
 
@@ -51,12 +53,12 @@
 #define GAME_BALL_STARTING_POSITION glm::vec3(250, 60, 0)
 #define GAME_BRICKS_STARTING_POSITION glm::vec3(0.5f, 230, 0)
 #define GAME_PALLET_SPEED 220.0f
-#define GAME_BALL_SPEED 110.0f
+#define GAME_BALL_SPEED 180.0f
 #define GAME_BRICK_LENGTH 38
 #define GAME_BRICK_WIDTH 22
 #define GAME_ROW_NUMBER 5
 #define GAME_COLUMN_NUMBER 12
-#define GAME_HORIZONTAL_OFFSET glm::vec3(41.6f, 0, 0)
+#define GAME_HORIZONTAL_OFFSET glm::vec3(41.3f, 0, 0)
 #define GAME_VERTICAL_OFFSET glm::vec3(0, 23.3f, 0)
 
 #define VEC3_RED glm::vec3(1, 0, 0)
@@ -74,10 +76,12 @@ namespace hw1 {
 
 /**
  * @class Editor
- * @brief Represents the spaceship editor.
  *
- * Used to implement logic behind creating editor scene + creation.
+ * @brief Represents the spaceship editor + game handler.
+ *
+ * Used to implement logic behind creating editor + game scene.
  * Inherits all properties and methods from SimpleScene.
+ *
  * @see SimpleScene.
  */
 class Editor : public gfxc::SimpleScene {
@@ -95,6 +99,7 @@ class Editor : public gfxc::SimpleScene {
    private:
     /**
      * @struct ViewSpace
+     *
      * @brief Structure used to implement ViewSpace logic.
      *
      * Translates logic space to actual screen resolution.
@@ -114,6 +119,7 @@ class Editor : public gfxc::SimpleScene {
 
     /**
      * @struct LogicSpace.
+     *
      * @brief Structure used to implement LogicSpace logic.
      *
      * Used to overcome limitations of using screen resolution.
@@ -133,6 +139,7 @@ class Editor : public gfxc::SimpleScene {
 
     /**
      * @struct BorderCorners.
+     *
      * @brief Defines corners of borders designed to delimit editor features
      * from one another.
      */
@@ -219,10 +226,10 @@ class Editor : public gfxc::SimpleScene {
     /**
      * @brief Sets up scene inside window.
      *
+     * Defines where and how screen will be drawn.
+     *
      * @param colorColor - Background color.
      * @param clear - Clear color buffer bool.
-     *
-     * Defines where and how screen will be drawn.
      */
     void SetViewportArea(glm::vec3 colorColor = glm::vec3(0),
                          bool clear = true);
@@ -243,19 +250,13 @@ class Editor : public gfxc::SimpleScene {
     void Update(float deltaTimeSeconds) override;
 
     /**
-     * @brief Checks what mouse button was clicked and where it was clicked.
-     * @param mouseX - Mouse X position.
-     * @param mouseY - Mouse Y position.
-     * @param button - Button clicked.
-     * @param mods - Modifiers (not used).
-     */
-
-    /**
      * @brief Checks what key was pressed.
+     *
      * @param key - Key that was pressed.
      * @param mods - Modifiers (not used).
      */
     void OnKeyPress(int key, int mods) override;
+
     /**
      * @brief Handles key hold inputs.
      *
@@ -276,6 +277,7 @@ class Editor : public gfxc::SimpleScene {
 
     /**
      * @brief Checks what mouse button was released and where it was released.
+     *
      * @param mouseX - Mouse X position.
      * @param mouseY - Mouse Y position.
      * @param button - Button clicked.
@@ -286,7 +288,8 @@ class Editor : public gfxc::SimpleScene {
 
     /**
      * @brief Event for mouse movement. Renders mesh if the player chose a block
-     * to place in grid.
+     * to place in grid and mouse button is held.
+     *
      * @param mouseX - Mouse X position.
      * @param mouseY - Mouse Y position.
      * @param deltaX - Change in mouse X coordinate since last frame.
@@ -373,6 +376,7 @@ class Editor : public gfxc::SimpleScene {
      * @param deltaTimeSeconds - Time passed since previous frame.
      */
     void DrawGameBall(float deltaTimeSeconds);
+
     /**
      * @brief Draws scene in current frame.
      */
@@ -461,6 +465,14 @@ class Editor : public gfxc::SimpleScene {
     void CheckCollisionBricks();
 
     /**
+     * @brief Removes brick with coordinates matching position given as
+     * parameter.
+     *
+     * @param position - Position to check if brick is there.
+     */
+    void RemoveBrick(const glm::vec3& position);
+
+    /**
      * @brief Deletes all dynamically allocated variables + vectors + all other
      * resources related to the game.
      */
@@ -474,7 +486,6 @@ class Editor : public gfxc::SimpleScene {
 
    protected:
     // ==================================================
-
     // EDITOR OBJECTS.
     std::vector<Square> grid;
     std::vector<Square> componentsCounter;
@@ -488,9 +499,7 @@ class Editor : public gfxc::SimpleScene {
     bool isLeftButtonHold;
     Object* buttonHoldObject;
     // EDITOR OBJECTS.
-
     // ==================================================
-
     // EDITOR + GAME OBJECTS.
     SpaceShip* spaceship;
 
@@ -501,9 +510,7 @@ class Editor : public gfxc::SimpleScene {
 
     glm::mat3 visMatrix;
     // EDITOR + GAME OBJECTS.
-
     // ==================================================
-
     // GAME OBJECTS
     bool isGameRunning;
     bool hasGameStarted;
@@ -520,6 +527,7 @@ class Editor : public gfxc::SimpleScene {
     int gameScore;
     int numberOfLives;
     // GAME OBJECTS
+    // ==================================================
 };
 
 }  // namespace hw1

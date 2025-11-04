@@ -1,7 +1,13 @@
 /**
  * @file line.h
+ *
  * @brief Header file containing Line class and line mesh creation method.
- * @author Grigoras Vlad Andrei.
+ *
+ * Inherits Object and represents a simple line.
+ *
+ * @see Object
+ *
+ * @author Grigoras Vlad Andrei
  */
 
 #pragma once
@@ -37,8 +43,10 @@ class Line : public Object {
 /**
  * @brief Creates a simple horizontal line mesh from (0,0) to (1,0)
  *        that can later be scaled and rotated.
+ *
  * @param name Name of the mesh.
  * @param color Line color.
+ *
  * @return Pointer to the created mesh.
  */
 Mesh* CreateLine(const std::string& name, glm::vec3 color);

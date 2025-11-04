@@ -2,7 +2,7 @@
  * @file spaceship.h
  *
  * @brief Declares Spaceship class. Used to remember spaceship configuration,
- * AABB and components.
+ * position and components.
  *
  * @author Grigoras Vlad Andrei
  */
@@ -60,6 +60,9 @@ class SpaceShip {
      */
     int GetNumberOfComponents() const { return this->numberOfComponents; }
 
+    /**
+     * @return Returns center position of spaceship.
+     */
     glm::vec3 GetCenterPosition() const { return this->centerPosition; }
 
     /**

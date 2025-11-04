@@ -38,10 +38,12 @@ class StartButton : public Object {
 
 /**
  * @brief Creates a mesh that resembles the starting button.
+ *
  * @param name - Name of mesh.
  * @param length - Length of left side.
  * @param color - Color of mesh.
  * @param fill - True if mesh should be filled with color, false otherwise.
+ *
  * @return Newly created mesh.
  */
 Mesh* CreateStartButton(const std::string& name, float length, glm::vec3 color,

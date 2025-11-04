@@ -3,10 +3,10 @@
  *
  * @brief Implements higher lever logic of Editor class.
  *
- * Handles scene rendering, transitioning from logic space to view space and
- * correct field initialization.
+ * Handles scene rendering, transitioning from logic space to view space,
+ * correct field initialization and higher lever game logic.
  *
- * @see Editor.h
+ * @see editor.h
  *
  * @author Grigoras Vlad Andrei
  */
@@ -64,6 +64,7 @@ void hw1::Editor::Init() {
     // GAME OBJECT CREATION
     this->CreateGameBricks();
     this->CreateGameBall();
+    // GAME OBJECT CREATION
     // ============================
 }
 

@@ -1,5 +1,6 @@
 /**
  * @file square.h
+ *
  * @brief Declares square class.
  *
  * Inherits Object and represents a simple square.
@@ -40,10 +41,12 @@ class Square : public Object {
 
 /**
  * @brief Creates a mesh that resembles a square.
+ *
  * @param name - Name of mesh.
  * @param length - Length of a side.
  * @param color - Color of mesh.
  * @param fill - True if mesh should be filled with color, false otherwise.
+ *
  * @return Newly created mesh.
  */
 Mesh* CreateSquare(const std::string& name, float length, glm::vec3 color,

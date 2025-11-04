@@ -1,8 +1,11 @@
 /**
  * @file circle.h
+ *
  * @brief Declares circle class.
  *
  * Inherits Object and represents the ball used in game.
+ *
+ * @see Object
  *
  * @author Grigoras Vlad Andrei
  */
@@ -54,10 +57,12 @@ class Circle : public Object {
 
 /**
  * @brief Creates a mesh that resembles a circle.
+ *
  * @param name - Name of mesh.
- * @param length - Length of a side.
+ * @param radius - Radius of circle.
  * @param color - Color of mesh.
  * @param fill - True if mesh should be filled with color, false otherwise.
+ *
  * @return Newly created mesh.
  */
 Mesh* CreateCircle(const std::string& name, float radius, glm::vec3 color,

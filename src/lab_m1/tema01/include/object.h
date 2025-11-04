@@ -1,5 +1,6 @@
 /**
  * @file object2D.h
+ *
  * @brief Defines Object class.
  *
  * An object will represent a mesh loaded into GPU memory, coordinates of the
@@ -9,8 +10,6 @@
  */
 
 #pragma once
-
-#include <iostream>
 
 #include "core/gpu/mesh.h"
 #include "glm/fwd.hpp"
@@ -44,6 +43,18 @@ class Object {
             }
 
             return false;
+        }
+
+        float getOverlapX(const AABB& other) {
+            return std::min(other.max.x - min.x, max.x - other.min.x);
+        }
+
+        float getOverlapY(const AABB& other) {
+            return std::min(other.max.y - min.y, max.y - other.min.y);
+        }
+
+        float getOverlapArea(const AABB& other) {
+            return getOverlapX(other) * getOverlapY(other);
         }
     };
 
@@ -85,6 +96,7 @@ class Object {
 
     /**
      * @brief Changes color for every vertex and loads new data in GPU.
+     *
      * @param color - Color to change mesh to.
      */
     void SetColor(const glm::vec3& color) {
