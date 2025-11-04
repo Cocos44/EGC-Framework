@@ -3,7 +3,6 @@
 
 #include "components/simple_scene.h"
 #include "core/engine.h"
-#include "lab_m1/lab3/lab3_vis2D.h"
 
 #if defined(WITH_LAB_M1)
 #include "lab_m1/lab_list.h"
@@ -32,7 +31,7 @@ int main(int argc, char** argv) {
 
     // Create a window property structure
     WindowProperties wp;
-    wp.resolution = glm::ivec2(1280, 720);
+    wp.resolution = glm::ivec2(1920, 1080);
     wp.vSync = true;
     wp.selfDir = GetParentDir(std::string(argv[0]));
 
@@ -40,7 +39,7 @@ int main(int argc, char** argv) {
     (void)Engine::Init(wp);
 
     // Create a new 3D world and start running it
-    World* world = new m1::Lab5();
+    World* world = new hw1::Editor();
 
     world->Init();
     world->Run();
