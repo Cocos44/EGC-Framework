@@ -1,20 +1,23 @@
 #version 330
 
-// Input
-// TODO(student): Get vertex attributes from each location
+layout(location = 0) in vec3 vertex_position;
+layout(location = 1) in vec3 vertex_normal;
+layout(location = 2) in vec2 vertex_texture;
+layout(location = 3) in vec3 vertex_color;
 
 // Uniform properties
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
 
-// Output
-// TODO(student): Output values to fragment shader
+uniform float Time;
+
+out vec3 frag_color;
+out vec3 frag_normal;
 
 void main()
 {
-    // TODO(student): Send output to fragment shader
-
-    // TODO(student): Compute gl_Position
-
+    frag_color = vertex_color * sin(Time);
+    frag_normal = vertex_normal;
+    gl_Position = Projection * View * Model * vec4(sin(Time) * vertex_position, 1.0);
 }
