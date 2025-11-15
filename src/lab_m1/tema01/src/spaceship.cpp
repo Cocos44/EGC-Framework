@@ -77,15 +77,6 @@ void hw1::SpaceShip::CalculateCenterPosition() {
 
     this->centerPosition =
         (this->lowestPosition + this->highestPosition) / 2.0f;
-
-    for (auto& object : this->components) {
-        this->lowestPosition =
-            glm::min(this->lowestPosition, object->GetPosition());
-        this->highestPosition =
-            glm::max(this->highestPosition, object->GetPosition());
-    }
-
-    this->centerPosition = (lowestPosition + highestPosition) / 2.0f;
 }
 
 bool hw1::SpaceShip::CanMoveSpaceship(float moveOffset, DIRECTION direction) {

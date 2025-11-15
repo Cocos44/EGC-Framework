@@ -38,6 +38,9 @@ void hw1::Editor::Init() {
     this->hasWon = false;
     this->hasLost = false;
 
+    this->isShaking = false;
+    this->shakeTime = 0.0f;
+
     this->gameBall = nullptr;
 
     this->gameScore = 0;
@@ -125,6 +128,26 @@ void hw1::Editor::Update(float deltaTimeSeconds) {
 
     // Compute the 2D visualization matrix
     this->visMatrix = this->GetSpaceConversionMatrix();
+
+    if (this->isShaking) {
+        this->shakeTime -= deltaTimeSeconds;
+
+        if (this->shakeTime <= 0.0f) {
+            this->isShaking = false;
+            this->shakeTime = 0.0f;
+        } else {
+            // Generate a float between [-1.0f and 1.0f] and translate camera by
+            // that offset. (makes the camera "shake" when hitting a game
+            // brick).
+            float offsetX =
+                ((rand() % 100) / 50.0f - 1.0f) * GAME_SHAKE_MAGNITUDE;
+            float offsetY =
+                ((rand() % 100) / 50.0f - 1.0f) * GAME_SHAKE_MAGNITUDE;
+
+            // Translate camera by calculated offset.
+            this->visMatrix *= transform2D::Translate(offsetX, offsetY);
+        }
+    }
 
     // Draw current scene.
     DrawScene(deltaTimeSeconds);

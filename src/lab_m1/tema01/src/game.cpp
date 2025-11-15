@@ -38,17 +38,24 @@ void hw1::Editor::PlaceSpaceShipStartPosition() {
 void hw1::Editor::PlaceBallStartingPosition() {
     this->gameBall->SetPosition(
         glm::vec3(this->spaceship->GetCenterPosition().x,
-                  this->spaceship->highestPosition.y + 15.0f, 0));
+                  this->spaceship->highestPosition.y + 25.0f, 0));
 
     // Start ball movement with random X coordinate direction.
-    int randomDirection = rand() % 2;
+    if (this->hasGameStarted) {
+        int randomDirection = rand() % 2;
 
-    this->gameBall->velocity.x =
-        randomDirection % 2 == 0 ? GAME_BALL_SPEED : -GAME_BALL_SPEED;
-    this->gameBall->velocity.y = GAME_BALL_SPEED;
+        this->gameBall->velocity.x =
+            randomDirection % 2 == 0 ? GAME_BALL_SPEED : -GAME_BALL_SPEED;
+        this->gameBall->velocity.y = GAME_BALL_SPEED;
+    }
 }
 
 void hw1::Editor::UpdateBallPosition(float deltaTimeSeconds) {
+    if (!this->hasGameStarted) {
+        this->PlaceBallStartingPosition();
+        return;
+    }
+
     // Calculate offset to future position.
     glm::vec3 nextPositionOffset =
         glm::vec3(this->gameBall->velocity.x, this->gameBall->velocity.y, 0) *
@@ -71,6 +78,8 @@ void hw1::Editor::UpdateBallPosition(float deltaTimeSeconds) {
 }
 
 void hw1::Editor::CheckCollisionSpaceShip() {
+    if (!this->hasGameStarted) return;
+
     glm::vec3 ballPosition = this->gameBall->GetPosition();
     float ballRadius = this->gameBall->GetRadius();
 
@@ -266,6 +275,10 @@ void hw1::Editor::CheckCollisionBricks() {
         this->hasGameStarted = false;
         this->hasWon = true;
     }
+
+    // Make camera shake for GAME_SHAKE_TIME.
+    this->isShaking = true;
+    this->shakeTime = GAME_SHAKE_TIME;
 }
 
 void hw1::Editor::CheckCollision() {
